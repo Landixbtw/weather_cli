@@ -3,19 +3,153 @@
 #include <errno.h>
 #include <string.h>
 
-#include "cJSON.h"
-
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <curl/urlapi.h>
 
+#include "cJSON.h"
+
 #define MAX_URL_LENGTH 256
+#define PROGRAM_NAME "./weather_cli"
+
+const char *api_key_filename = "WEATHERSTACK_API_KEY.env";
+const char *json_filename = "json_data.json";
 
 /* 
  * To give the user the weather info he wants we need to get a city name.
 */
 
+char ACCESS_KEY[124];
 char *BASE_URL = "http://api.weatherstack.com/current";
+char url[MAX_URL_LENGTH];
+
+
+size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream);
+void build_url(char *CITY);
+
+
+int main(int argc, char *argv[]) 
+{
+    CURL *curl = curl_easy_init();
+    CURLcode res;
+
+    /* to have "access" to the key, we first need to load/read the file into memory */
+
+    FILE *read_api_key_file;
+    FILE *temp_json_file;
+
+    read_api_key_file = fopen(api_key_filename, "r");
+
+    if (read_api_key_file == NULL) {
+        fprintf(stderr, "Error: Couldn't open file: %s\n", api_key_filename);
+        return 1;
+    }
+
+    int int_key = fscanf(read_api_key_file, "%s", ACCESS_KEY);
+
+    // fprintf(stdout, "api key: %s \n", ACCESS_KEY);
+
+    /* This gives us the user input */
+    if(argc == 2) {
+        build_url(argv[1]);
+
+        fprintf(stdout, "The city you are checking is: %s\n", argv[1]);
+    } else {
+        fprintf(stderr, "Usage: %s <city>\nExample: %s New+York\n", PROGRAM_NAME, PROGRAM_NAME);
+    }
+
+    // FIX: Error handling for cities that dont exist / and or partial city names ? Api just gives a city with the same few letters
+
+    /*
+     * we first need to make a call to the weatherstack api to get the json data
+     *
+     * https://curl.se/libcurl/c/libcurl-tutorial.html
+    */
+
+
+    // stackoverflow.com/questions/27422918/send-http-get-request-using-curl-in-c
+    if (curl)
+    {
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+
+        /* For write_data to actually write data, we first need to open a file,
+         * and after write_data has written data we need to close the file again. 
+        */
+
+        // wb = write binary
+        temp_json_file = fopen("json_data.json", "wb");
+
+        if (temp_json_file) {
+
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, temp_json_file);
+
+            /* Perform the request, res gets the return code */
+            res = curl_easy_perform(curl);
+
+            /* Then we check for errors */
+            if(res != CURLE_OK) {
+                fprintf(stderr,"\ncurl_easy_perform() failed: %s\n",curl_easy_strerror(res));
+            }
+
+        }
+
+        /* ❗ CLEANUP ❗ */
+        curl_easy_cleanup(curl);
+        fclose(temp_json_file);
+    }
+
+    /* 
+     * To read json data we need to 
+     * open the file ✅
+     * read the contents into a buffer
+     * parse the JSON data
+     * access the data
+     * delete the json object 
+     *
+     * https://www.geeksforgeeks.org/cjson-json-file-write-read-modify-in-c/
+     *
+     * printing / parsing json. https://github.com/DaveGamble/cJSON?tab=readme-ov-file#printing-json
+     */
+
+    temp_json_file = fopen("json_data.json", "rb"); 
+
+    if (temp_json_file == NULL) {
+        fprintf(stderr, "Error: Couldn't open file: %s\n", json_filename);
+        fclose(temp_json_file);
+        return 1;
+
+    }
+
+    // get a buffer, that is as big as the file.
+ 
+    // Get file size
+    // this code is from claude ai
+    fseek(temp_json_file, 0, SEEK_END);
+    long file_size = ftell(temp_json_file);
+    fseek(temp_json_file, 0, SEEK_SET);
+// ---------------
+
+    char *buffer = malloc(sizeof(file_size));
+    if (buffer == NULL) {
+        fprintf(stderr, "Couldn't allocate enough memory.\n");
+        fclose(temp_json_file);
+        return 1;
+    }
+
+    // TODO: Copy the whole file into the buffer
+
+    // cJSON *json = cJSON_ParseWithLength(temp_json_file, MAX_URL_LENGTH);
+
+    // free(buffer);
+    // cJSON_Delete(json);
+    //
+    // - read the contents into a string
+
+
+    return 0;
+}
+
 
 /* https://curl.se/libcurl/c/url2file.html
  *
@@ -31,6 +165,7 @@ char *BASE_URL = "http://api.weatherstack.com/current";
  * It returns the number of elements successfully written.
  *
 */
+
 
 size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 {
@@ -49,110 +184,8 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
     return written;
 }
 
-int main(int argc, char *argv[]) 
-{
-    CURL *curl = curl_easy_init();
-    CURLcode res;
-
-    /* to have "access" to the key, we first need to load/read the file into memory */
-
-    FILE *read_api_key_file;
-    FILE *temp_json_file;
-
-    const char *api_key_filename = "WEATHERSTACK_API_KEY.env";
-    read_api_key_file = fopen(api_key_filename, "r");
-
-    if (!read_api_key_file) {
-        fprintf(stderr, "Error: Couldn't open file: %s\n", api_key_filename);
-        return 1;
-    }
-
-    char ACCESS_KEY[124];
-    int int_key = fscanf(read_api_key_file, "%s", ACCESS_KEY);
-
-    // fprintf(stdout, "api key: %s \n", ACCESS_KEY);
-    fprintf(stdout, "For what city would you like to get info ? \n");
-    fprintf(stdout, "If your city name is seperated by a [space] use a plus sign in between e.g. New+York. \n");
-
-    /* This gives us the user input */
-
-    // TODO: check max input argc ?
-    char CITY[124];
-    scanf("%s", CITY);
-
-    // FIX: Error handling for cities that dont exist / and or partial city names ? Api just gives a city with the same few letters
-
-    /*
-     * we first need to make a call to the weatherstack api to get the json data
-     *
-     * https://curl.se/libcurl/c/libcurl-tutorial.html
-    */
-
-
-    // stackoverflow.com/questions/27422918/send-http-get-request-using-curl-in-c
-    if (curl)
-    {
-        char url[MAX_URL_LENGTH];
-
-        /* We are putting together the url, with the base url the secret api key, and the user input city */
-
-        snprintf(url, sizeof(url), "%s?access_key=%s&query=%s", BASE_URL, ACCESS_KEY, CITY);
-
-        // fprintf(stdout, "url: %s\n", url);
-        printf("\n");
-
-        curl_easy_setopt(curl, CURLOPT_URL, url);
-
-    // TODO: For any error, rempromt the user, before writing anything to a file. Or printing anything to the screen
-
-        /* For write_data to actually write data, we first need to open a file, and after write_data has written data we need to close the file again. */
-
-        // wb = write binary
-        temp_json_file = fopen("json_data.json", "wb");
-
-        if (temp_json_file) {
-
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, temp_json_file);
-
-            /* Perform the request, res gets the return code */
-            res = curl_easy_perform(curl);
-
-            /* Then we check for errors */
-            if(res != CURLE_OK) {
-                fprintf(stderr,"curl_easy_perform() failed: %s\n",curl_easy_strerror(res));
-                // here we need to rempromt the user 
-            }
-
-        }
-
-        /* ❗ CLEANUP ❗ */
-        curl_easy_cleanup(curl);
-        fclose(temp_json_file);
-    }
-
-    /* 
-     * To read json data we need to 
-     * open the file
-     * read the contents into a string
-     * parse the JSON data
-     * access the data
-     * delete the json object 
-     *
-     * https://www.geeksforgeeks.org/cjson-json-file-write-read-modify-in-c/
-     *
-     * printing / parsing json. https://github.com/DaveGamble/cJSON?tab=readme-ov-file#printing-json
-     */
-
-    // temp_json_file = fopen("json_data.json", "rb"); 
-    
-    // if (temp_json_file) {
-        // cJSON *json = cJSON_ParseWithLength(temp_json_file, MAX_URL_LENGTH);
-
-        // cJSON_Delete(json);
-        //
-        // - read the contents into a string
-    // }
-
-    return 0;
+/* We are putting together the url, with the base url the secret api key, and the user input city */
+void build_url(char *CITY) {
+    snprintf(url, sizeof(url), "%s?access_key=%s&query=%s", BASE_URL, ACCESS_KEY, CITY);
 }
+
