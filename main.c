@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     /* 
      * To read json data we need to 
      * open the file ✅
-     * read the contents into a buffer
+     * read the contents into a buffer ✅
      * parse the JSON data
      * access the data
      * delete the json object 
@@ -111,6 +111,7 @@ int main(int argc, char *argv[])
      *
      * printing / parsing json. https://github.com/DaveGamble/cJSON?tab=readme-ov-file#printing-json
      */
+
 
     temp_json_file = fopen("json_data.json", "rb"); 
 
@@ -121,28 +122,57 @@ int main(int argc, char *argv[])
 
     }
 
-    // get a buffer, that is as big as the file.
  
     // Get file size
     // this code is from claude ai
+
     fseek(temp_json_file, 0, SEEK_END);
     long file_size = ftell(temp_json_file);
     fseek(temp_json_file, 0, SEEK_SET);
-// ---------------
+    // ---------------
 
-    char *buffer = malloc(sizeof(file_size));
+
+    // get a buffer, that is as big as the file.
+    char *buffer = malloc(sizeof(file_size) + 1);
     if (buffer == NULL) {
         fprintf(stderr, "Couldn't allocate enough memory.\n");
         fclose(temp_json_file);
         return 1;
     }
 
-    // TODO: Copy the whole file into the buffer
+    cJSON *json;
 
-    // cJSON *json = cJSON_ParseWithLength(temp_json_file, MAX_URL_LENGTH);
+    /* 
+     * claude helped me make the code a bit more efficient and easier to write, 
+     * we are accounting to the NULL terminator, and so we can use cJSON_Parse 
+     * instead of cJSON_ParseWithLength
+    */
 
-    // free(buffer);
-    // cJSON_Delete(json);
+    while (fread(buffer, 1 , 1, temp_json_file)) {
+         json = cJSON_Parse(buffer);
+    }
+
+    fclose(temp_json_file);
+    free(buffer);
+
+    if (json == NULL) {
+        fprintf(stderr, "'json',is empty\n");
+        cJSON_Delete(json);
+    }
+
+    char *json_string = cJSON_Print(json);
+
+    if (json_string == NULL) {
+        fprintf(stderr, "Failed to print json_data. jason_data seems to be NULL.\n");
+        cJSON_Delete(json);
+    }
+
+    // this doesnt get printed and causes segfault, because json_string is NULL
+    fprintf(stdout, "%s", json_string);
+
+
+    free(json_string);
+    cJSON_Delete(json);
     //
     // - read the contents into a string
 
