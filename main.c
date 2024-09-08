@@ -133,37 +133,56 @@ int main(int argc, char *argv[])
 
 
     // get a buffer, that is as big as the file.
-    char *buffer = malloc(sizeof(file_size) + 1);
+    char *buffer = malloc(file_size + 1);
     if (buffer == NULL) {
         fprintf(stderr, "Couldn't allocate enough memory.\n");
         fclose(temp_json_file);
         return 1;
     }
 
+    // this was recommened by claude for better/more error handling
+
+    // size_t bytes_read = fread(buffer, 1, file_size, temp_json_file);
+    //
+    // if (bytes_read < (size_t)file_size) {
+    //     fprintf(stderr, "Not all bytes were read: bytes_read: %zu < file_size: %ld\n", bytes_read, file_size);
+    //     free(buffer);
+    //     return 1;
+    // }
+    //
+    // buffer[bytes_read] = '\0';  // Null-terminate the buffer
+    //
+    // printf("Buffer contents: %s\n", buffer);
+
+    // -------------------------------------------
     cJSON *json;
 
     /* 
      * claude helped me make the code a bit more efficient and easier to write, 
-     * we are accounting to the NULL terminator, and so we can use cJSON_Parse 
-     * instead of cJSON_ParseWithLength
     */
 
-    while (fread(buffer, 1 , 1, temp_json_file)) {
-         json = cJSON_Parse(buffer);
+    /*
+     * using file_size and not size_of(file_size) here is important, so as to not the 
+     * size of the long file_size but the actuall file_size
+     *
+     * " Using sizeof(file_size) might not give you what you expect. Remember, 
+     * file_size is likely a long type, so sizeof(file_size) would give you the 
+     * size of a long, not the actual file size."
+     *
+    */  
+    while (fread(buffer, file_size , 1, temp_json_file)) {
+        json = cJSON_Parse(buffer);
     }
 
-    fclose(temp_json_file);
-    free(buffer);
-
     if (json == NULL) {
-        fprintf(stderr, "'json',is empty\n");
+        fprintf(stderr, "cJSON json is NULL.\n");
         cJSON_Delete(json);
     }
 
     char *json_string = cJSON_Print(json);
 
     if (json_string == NULL) {
-        fprintf(stderr, "Failed to print json_data. jason_data seems to be NULL.\n");
+        fprintf(stderr, "Failed to print json_string: %s.\n", json_string);
         cJSON_Delete(json);
     }
 
@@ -171,6 +190,8 @@ int main(int argc, char *argv[])
     fprintf(stdout, "%s", json_string);
 
 
+    fclose(temp_json_file);
+    free(buffer);
     free(json_string);
     cJSON_Delete(json);
     //
