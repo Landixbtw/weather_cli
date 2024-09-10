@@ -104,7 +104,6 @@ int main(int argc, char *argv[])
      * open the file ✅
      * read the contents into a buffer ✅
      * parse the JSON data
-     * access the data
      * delete the json object 
      *
      * https://www.geeksforgeeks.org/cjson-json-file-write-read-modify-in-c/
@@ -169,7 +168,8 @@ int main(int argc, char *argv[])
      * file_size is likely a long type, so sizeof(file_size) would give you the 
      * size of a long, not the actual file size."
      *
-    */  
+    */
+
     while (fread(buffer, file_size , 1, temp_json_file)) {
         json = cJSON_Parse(buffer);
     }
@@ -186,8 +186,65 @@ int main(int argc, char *argv[])
         cJSON_Delete(json);
     }
 
-    // this doesnt get printed and causes segfault, because json_string is NULL
-    fprintf(stdout, "%s", json_string);
+    const char *error_ptr = cJSON_GetErrorPtr();
+    if (error_ptr != NULL) {
+    	fprintf(stderr, "Error before: %s\n", error_ptr);
+    }
+
+    fprintf(stdout, "%s\n", json_string);
+
+    /* filter the usefull information and display it nicely */
+
+    // NOTE: Error handling is being done above
+
+    const cJSON *name = NULL;
+    const cJSON *observation_time = NULL;
+    const cJSON *temperatur = NULL;
+    const cJSON *weather_descriptions = NULL;
+
+
+    const cJSON *location = NULL;
+    const cJSON *current = NULL;
+
+    /* We can't access name directly since its nested, so we first need to 
+     * parse everything and then parse location 
+    */
+
+
+    // TODO: How can this be more compact ? more better ?
+    
+    location = cJSON_GetObjectItemCaseSensitive(json, "location");
+    if (location != NULL) {
+        name = cJSON_GetObjectItemCaseSensitive(location, "name");
+
+    if (cJSON_IsString(name) && (name->valuestring != NULL ))
+        {
+            fprintf(stdout, "\"%s\"\n", name->valuestring);
+        }
+    }
+
+    current = cJSON_GetObjectItemCaseSensitive(json, "current");
+    if (current != NULL) {
+        observation_time = cJSON_GetObjectItemCaseSensitive(current, "observation_time");
+
+        if (cJSON_IsString(observation_time) && (observation_time->valuestring != NULL)) {
+            fprintf(stdout, "\"%s\"\n", observation_time->valuestring);
+        }
+
+        // FIX: Tempratur is not printed
+        
+        temperatur = cJSON_GetObjectItemCaseSensitive(current, "temperatur");
+
+        if (cJSON_IsString(temperatur) && (temperatur->valuestring != NULL)) {
+            fprintf(stdout, "\"%s\"\n", temperatur->valuestring);
+        }
+    }
+
+
+    
+
+
+    // show the picture if possible
 
 
     fclose(temp_json_file);
