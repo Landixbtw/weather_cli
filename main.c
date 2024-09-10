@@ -191,17 +191,20 @@ int main(int argc, char *argv[])
     	fprintf(stderr, "Error before: %s\n", error_ptr);
     }
 
-    fprintf(stdout, "%s\n", json_string);
 
     /* filter the usefull information and display it nicely */
 
     // NOTE: Error handling is being done above
 
+    const cJSON *request = NULL;
     const cJSON *name = NULL;
+    const cJSON *unit = NULL;
     const cJSON *observation_time = NULL;
-    const cJSON *temperatur = NULL;
+    const cJSON *temperature = NULL;
     const cJSON *weather_descriptions = NULL;
-
+    const cJSON *wind_speed = NULL;
+    const cJSON *humidity = NULL;
+    const cJSON *feelslike = NULL;
 
     const cJSON *location = NULL;
     const cJSON *current = NULL;
@@ -212,15 +215,23 @@ int main(int argc, char *argv[])
 
 
     // TODO: How can this be more compact ? more better ?
-    
+
+    request = cJSON_GetObjectItemCaseSensitive(json, "request");
+    if (request != NULL) {
+        unit = cJSON_GetObjectItemCaseSensitive(request, "unit");
+
+        if (cJSON_IsString(unit) && (unit->valuestring != NULL)) {
+            fprintf(stdout, "unit:\"%s\"\n", unit->valuestring);
+        }
+    }
+
     location = cJSON_GetObjectItemCaseSensitive(json, "location");
     if (location != NULL) {
         name = cJSON_GetObjectItemCaseSensitive(location, "name");
 
-    if (cJSON_IsString(name) && (name->valuestring != NULL ))
-        {
-            fprintf(stdout, "\"%s\"\n", name->valuestring);
-        }
+        // if (cJSON_IsString(name) && (name->valuestring != NULL )) {
+        //     fprintf(stdout, "city: \"%s\"\n", name->valuestring);
+        // }
     }
 
     current = cJSON_GetObjectItemCaseSensitive(json, "current");
@@ -228,20 +239,50 @@ int main(int argc, char *argv[])
         observation_time = cJSON_GetObjectItemCaseSensitive(current, "observation_time");
 
         if (cJSON_IsString(observation_time) && (observation_time->valuestring != NULL)) {
-            fprintf(stdout, "\"%s\"\n", observation_time->valuestring);
+            fprintf(stdout, "It is %s in %s.\n", observation_time->valuestring, name->valuestring);
         }
 
-        // FIX: Tempratur is not printed
-        
-        temperatur = cJSON_GetObjectItemCaseSensitive(current, "temperatur");
+        temperature = cJSON_GetObjectItemCaseSensitive(current, "temperature");
 
-        if (cJSON_IsString(temperatur) && (temperatur->valuestring != NULL)) {
-            fprintf(stdout, "\"%s\"\n", temperatur->valuestring);
+        /* since temperature is a number we have to check for a number */
+        if (cJSON_IsNumber(temperature)) {
+            fprintf(stdout, "With a temperature of: %i °C.\n", temperature->valueint);
+        }
+
+        weather_descriptions = cJSON_GetObjectItemCaseSensitive(current, "weather_descriptions");
+
+        /* to print the part of the array, we first need to index, since there 
+         * is only ever one entry in the array we can alway index to 0 
+        */
+
+        if (cJSON_IsArray(weather_descriptions)) {
+            cJSON *weather_descriptions_array_item = cJSON_GetArrayItem(weather_descriptions, 0);
+            if (cJSON_IsString(weather_descriptions_array_item) && (weather_descriptions_array_item->valuestring != NULL)) {
+                fprintf(stdout, "It is %s.\n", weather_descriptions_array_item->valuestring);
+            }
+        }
+        
+        wind_speed = cJSON_GetObjectItemCaseSensitive(current, "wind_speed");
+
+        if (cJSON_IsNumber(wind_speed)) {
+            fprintf(stdout, "And the wind is %i km/h fast.\n", wind_speed->valueint);
+        }
+
+        humidity = cJSON_GetObjectItemCaseSensitive(current, "humidity");
+        
+        if (cJSON_IsNumber(humidity)) {
+            fprintf(stdout, "With a humidity of: %i.\n", humidity->valueint);
+        }
+
+        feelslike = cJSON_GetObjectItemCaseSensitive(current, "feelslike");
+
+        if (cJSON_IsNumber(feelslike)) {
+            fprintf(stdout, "It feels like: %i °C.\n", feelslike->valueint);
         }
     }
 
 
-    
+    // fprintf(stdout, "\n%s\n", json_string);
 
 
     // show the picture if possible
