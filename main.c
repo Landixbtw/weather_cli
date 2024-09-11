@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
      * https://curl.se/libcurl/c/libcurl-tutorial.html
     */
 
+
     // stackoverflow.com/questions/27422918/send-http-get-request-using-curl-in-c
     if (curl)
     {
@@ -113,8 +114,8 @@ int main(int argc, char *argv[])
      * To read json data we need to 
      * open the file ✅
      * read the contents into a buffer ✅
-     * parse the JSON data
-     * delete the json object 
+     * parse the JSON data ✅
+     * delete the json object ✅ 
      *
      * https://www.geeksforgeeks.org/cjson-json-file-write-read-modify-in-c/
      *
@@ -130,7 +131,6 @@ int main(int argc, char *argv[])
         return 1;
 
     }
-
 
     // Get file size
     // this code is from claude ai 
@@ -215,9 +215,9 @@ int main(int argc, char *argv[])
     // TODO: How can this be more compact ? more better ?
 
 
-    // TODO: Follow kind of the same pattern to make "custom" error messages. For e.g. api error code 104
-
-    /* This is for handling api error codes, and get a "custom" error message */
+    /* This is for handling api error codes, and get a "custom" error message 
+     * bzw. nicer looking, instead of the json 
+    */
 
     api_success = cJSON_GetObjectItemCaseSensitive(json, "success");
     if (cJSON_IsFalse(api_success)) {
