@@ -1,7 +1,9 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -22,6 +24,8 @@ const char *json_filename = "json_data.json";
 char ACCESS_KEY[124];
 char *BASE_URL = "http://api.weatherstack.com/current";
 char url[MAX_URL_LENGTH];
+char *units = "m";
+long http_code = 0;
 
 
 size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream);
@@ -53,9 +57,11 @@ int main(int argc, char *argv[])
     if(argc == 2) {
         build_url(argv[1]);
 
-        fprintf(stdout, "The city you are checking is: %s\n", argv[1]);
+        // fprintf(stdout, "The city you are checking is: %s\n", argv[1]);
     } else {
         fprintf(stderr, "Usage: %s <city>\nExample: %s New+York\n", PROGRAM_NAME, PROGRAM_NAME);
+        fclose(read_api_key_file);
+        return 1;
     }
 
     // FIX: Error handling for cities that dont exist / and or partial city names ? Api just gives a city with the same few letters
@@ -66,11 +72,11 @@ int main(int argc, char *argv[])
      * https://curl.se/libcurl/c/libcurl-tutorial.html
     */
 
-
     // stackoverflow.com/questions/27422918/send-http-get-request-using-curl-in-c
     if (curl)
     {
         curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
 
         /* For write_data to actually write data, we first need to open a file,
          * and after write_data has written data we need to close the file again. 
@@ -90,8 +96,12 @@ int main(int argc, char *argv[])
             /* Then we check for errors */
             if(res != CURLE_OK) {
                 fprintf(stderr,"\ncurl_easy_perform() failed: %s\n",curl_easy_strerror(res));
+            } else {
+                curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+                if (http_code >= 1) {
+                    fprintf(stderr, "http error: %ld\n", http_code);
+                }
             }
-
         }
 
         /* ❗ CLEANUP ❗ */
@@ -121,9 +131,9 @@ int main(int argc, char *argv[])
 
     }
 
- 
+
     // Get file size
-    // this code is from claude ai
+    // this code is from claude ai 
 
     fseek(temp_json_file, 0, SEEK_END);
     long file_size = ftell(temp_json_file);
@@ -139,28 +149,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // this was recommened by claude for better/more error handling
-
-    // size_t bytes_read = fread(buffer, 1, file_size, temp_json_file);
-    //
-    // if (bytes_read < (size_t)file_size) {
-    //     fprintf(stderr, "Not all bytes were read: bytes_read: %zu < file_size: %ld\n", bytes_read, file_size);
-    //     free(buffer);
-    //     return 1;
-    // }
-    //
-    // buffer[bytes_read] = '\0';  // Null-terminate the buffer
-    //
-    // printf("Buffer contents: %s\n", buffer);
-
-    // -------------------------------------------
     cJSON *json;
 
     /* 
      * claude helped me make the code a bit more efficient and easier to write, 
-    */
-
-    /*
+     *
      * using file_size and not size_of(file_size) here is important, so as to not the 
      * size of the long file_size but the actuall file_size
      *
@@ -188,7 +181,7 @@ int main(int argc, char *argv[])
 
     const char *error_ptr = cJSON_GetErrorPtr();
     if (error_ptr != NULL) {
-    	fprintf(stderr, "Error before: %s\n", error_ptr);
+        fprintf(stderr, "Error before: %s\n", error_ptr);
     }
 
 
@@ -196,7 +189,15 @@ int main(int argc, char *argv[])
 
     // NOTE: Error handling is being done above
 
+    const cJSON *api_error = NULL;
+    const cJSON *api_success = NULL;
+    const cJSON *api_error_code = NULL;
+    const cJSON *api_error_info = NULL;
+
     const cJSON *request = NULL;
+    const cJSON *location = NULL;
+    const cJSON *current = NULL;
+
     const cJSON *name = NULL;
     const cJSON *unit = NULL;
     const cJSON *observation_time = NULL;
@@ -206,15 +207,35 @@ int main(int argc, char *argv[])
     const cJSON *humidity = NULL;
     const cJSON *feelslike = NULL;
 
-    const cJSON *location = NULL;
-    const cJSON *current = NULL;
-
     /* We can't access name directly since its nested, so we first need to 
      * parse everything and then parse location 
     */
 
 
     // TODO: How can this be more compact ? more better ?
+
+
+    // TODO: Follow kind of the same pattern to make "custom" error messages. For e.g. api error code 104
+
+    /* This is for handling api error codes, and get a "custom" error message */
+
+    api_success = cJSON_GetObjectItemCaseSensitive(json, "success");
+    if (cJSON_IsFalse(api_success)) {
+        api_error = cJSON_GetObjectItemCaseSensitive(json, "error");
+
+        if (api_error != NULL) {
+            api_error_code = cJSON_GetObjectItemCaseSensitive(api_error, "code");
+            api_error_info = cJSON_GetObjectItemCaseSensitive(api_error, "info");
+            if (cJSON_IsNumber(api_error_code) && (api_error_code->valueint) && cJSON_IsString(api_error_info) && (api_error_info->valuestring)) {
+                fprintf(stderr, "API ERROR RESPONSE CODE: %i %s\n", api_error_code->valueint, api_error_info->valuestring);
+            } else {
+                fprintf(stderr, "Uknown error code.\n");
+            }
+        }
+    }
+
+
+
 
     request = cJSON_GetObjectItemCaseSensitive(json, "request");
     if (request != NULL) {
@@ -282,7 +303,7 @@ int main(int argc, char *argv[])
     }
 
 
-    // fprintf(stdout, "\n%s\n", json_string);
+    fprintf(stdout, "\n%s\n", json_string);
 
 
     // show the picture if possible
@@ -335,6 +356,7 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 
 /* We are putting together the url, with the base url the secret api key, and the user input city */
 void build_url(char *CITY) {
+    // NOTE: there is also the possibility to do query = fetch:ip, to pass the 
+    // ip to the api, to get the weather for your location
     snprintf(url, sizeof(url), "%s?access_key=%s&query=%s", BASE_URL, ACCESS_KEY, CITY);
 }
-
