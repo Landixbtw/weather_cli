@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
                 fprintf(stderr,"\ncurl_easy_perform() failed: %s\n",curl_easy_strerror(res));
             } else {
                 curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-                if (http_code >= 1) {
+                if (http_code >= 1 && http_code != 200) {
                     fprintf(stderr, "http error: %ld\n", http_code);
                 }
             }
@@ -212,12 +212,11 @@ int main(int argc, char *argv[])
     */
 
 
-    // TODO: How can this be more compact ? more better ?
-
-
     /* This is for handling api error codes, and get a "custom" error message 
      * bzw. nicer looking, instead of the json 
     */
+
+    // FIX: How to get the json error away ?
 
     api_success = cJSON_GetObjectItemCaseSensitive(json, "success");
     if (cJSON_IsFalse(api_success)) {
@@ -237,6 +236,7 @@ int main(int argc, char *argv[])
 
 
 
+    // TODO: How can this be more compact ? more better ?
     request = cJSON_GetObjectItemCaseSensitive(json, "request");
     if (request != NULL) {
         unit = cJSON_GetObjectItemCaseSensitive(request, "unit");
