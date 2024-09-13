@@ -1,7 +1,8 @@
 {
   "success": false,
   "error": {
-    "code": 104,
-    "info": "Your monthly usage limit has been reached. Please upgrade your Subscription Plan."
+    "code": 101,
+    "type": "missing_access_key",
+    "info": "You have not supplied an API Access Key. [Required format: access_key=YOUR_ACCESS_KEY]"
   }
 }
