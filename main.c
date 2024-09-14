@@ -376,12 +376,17 @@ size_t terminal_display_picture(const cJSON *current)
      *  chafa
     */
 
-    size_t result;
+    size_t result = 0;
     const cJSON *picture= NULL;
     char command[124];
-    const char image_viewers[124];
+    const char *image_viewers[] = {"timg" , "chafa"};
 
+    // NOTE: Alactritty seems to show the image but at a really bad quality
+    const char *supported_terminals[] = { "xterm-ghostty", "kitty", "wezterm"};
 
+    // TODO: Check with terminal emulator the user is using
+    //
+    // smth like this: https://askubuntu.com/questions/210182/how-to-check-which-terminal-emulator-is-being-currently-used
     if(current != NULL) {
         picture = cJSON_GetObjectItemCaseSensitive(current, "picture");
         if (cJSON_IsString(picture) && (picture->valuestring != NULL)) {
