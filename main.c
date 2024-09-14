@@ -30,7 +30,7 @@ long http_code = 0;
 
 size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream);
 void build_url(char *CITY);
-
+size_t terminal_display_picture(void);
 
 int main(int argc, char *argv[]) 
 {
@@ -241,18 +241,18 @@ int main(int argc, char *argv[])
     if (request != NULL) {
         unit = cJSON_GetObjectItemCaseSensitive(request, "unit");
 
-        if (cJSON_IsString(unit) && (unit->valuestring != NULL)) {
-            fprintf(stdout, "unit:\"%s\"\n", unit->valuestring);
-        }
+        // if (cJSON_IsString(unit) && (unit->valuestring != NULL)) {
+        //     fprintf(stdout, "unit:\"%s\"\n", unit->valuestring);
+        // }
     }
 
     location = cJSON_GetObjectItemCaseSensitive(json, "location");
     if (location != NULL) {
         name = cJSON_GetObjectItemCaseSensitive(location, "name");
 
-        // if (cJSON_IsString(name) && (name->valuestring != NULL )) {
-        //     fprintf(stdout, "city: \"%s\"\n", name->valuestring);
-        // }
+        if (cJSON_IsString(name) && (name->valuestring != NULL )) {
+            fprintf(stdout, "- City: %s\n", name->valuestring);
+        }
     }
 
     current = cJSON_GetObjectItemCaseSensitive(json, "current");
@@ -260,14 +260,14 @@ int main(int argc, char *argv[])
         observation_time = cJSON_GetObjectItemCaseSensitive(current, "observation_time");
 
         if (cJSON_IsString(observation_time) && (observation_time->valuestring != NULL)) {
-            fprintf(stdout, "It is %s in %s.\n", observation_time->valuestring, name->valuestring);
+            fprintf(stdout, "- Time: %s.\n", observation_time->valuestring);
         }
 
         temperature = cJSON_GetObjectItemCaseSensitive(current, "temperature");
 
         /* since temperature is a number we have to check for a number */
         if (cJSON_IsNumber(temperature)) {
-            fprintf(stdout, "With a temperature of: %i °C.\n", temperature->valueint);
+            fprintf(stdout, "- Temperature: %i°C.\n", temperature->valueint);
         }
 
         weather_descriptions = cJSON_GetObjectItemCaseSensitive(current, "weather_descriptions");
@@ -279,31 +279,31 @@ int main(int argc, char *argv[])
         if (cJSON_IsArray(weather_descriptions)) {
             cJSON *weather_descriptions_array_item = cJSON_GetArrayItem(weather_descriptions, 0);
             if (cJSON_IsString(weather_descriptions_array_item) && (weather_descriptions_array_item->valuestring != NULL)) {
-                fprintf(stdout, "It is %s.\n", weather_descriptions_array_item->valuestring);
+                fprintf(stdout, "- Weather: %s.\n", weather_descriptions_array_item->valuestring);
             }
         }
-        
+
         wind_speed = cJSON_GetObjectItemCaseSensitive(current, "wind_speed");
 
         if (cJSON_IsNumber(wind_speed)) {
-            fprintf(stdout, "And the wind is %i km/h fast.\n", wind_speed->valueint);
+            fprintf(stdout, "- Wind speed: %i km/h.\n", wind_speed->valueint);
         }
 
         humidity = cJSON_GetObjectItemCaseSensitive(current, "humidity");
         
         if (cJSON_IsNumber(humidity)) {
-            fprintf(stdout, "With a humidity of: %i.\n", humidity->valueint);
+            fprintf(stdout, "- Humidity: %i.\n", humidity->valueint);
         }
 
         feelslike = cJSON_GetObjectItemCaseSensitive(current, "feelslike");
 
         if (cJSON_IsNumber(feelslike)) {
-            fprintf(stdout, "It feels like: %i °C.\n", feelslike->valueint);
+            fprintf(stdout, "- Feels like: %i°C.\n", feelslike->valueint);
         }
     }
 
 
-    fprintf(stdout, "\n%s\n", json_string);
+    // fprintf(stdout, "\n%s\n", json_string);
 
 
     // show the picture if possible
@@ -355,8 +355,17 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 }
 
 /* We are putting together the url, with the base url the secret api key, and the user input city */
-void build_url(char *CITY) {
+void build_url(char *CITY) 
+{
     // NOTE: there is also the possibility to do query = fetch:ip, to pass the 
     // ip to the api, to get the weather for your location
     snprintf(url, sizeof(url), "%s?access_key=%s&query=%s", BASE_URL, ACCESS_KEY, CITY);
+}
+
+size_t terminal_display_picture(void) 
+{
+    char *TERM = 
+    if (getenv())
+    // $TERM
+    return 0;
 }
