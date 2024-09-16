@@ -28,6 +28,8 @@ char *units = "m";
 long http_code = 0;
 
 
+// FIX: If the city the user enters and the city in the json dont match print error
+
 size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream);
 void build_url(char *CITY);
 size_t terminal_display_picture(void);
@@ -50,7 +52,11 @@ int main(int argc, char *argv[])
     }
 
     int int_key = fscanf(read_api_key_file, "%s", ACCESS_KEY);
-
+    
+    if (int_key == 0) {
+        fprintf(stderr, "No access key in file %s. \n", api_key_filename);
+        return 1;
+    }
     // fprintf(stdout, "api key: %s \n", ACCESS_KEY);
 
     /* This gives us the user input */
@@ -362,10 +368,10 @@ void build_url(char *CITY)
     snprintf(url, sizeof(url), "%s?access_key=%s&query=%s", BASE_URL, ACCESS_KEY, CITY);
 }
 
-size_t terminal_display_picture(void) 
-{
-    char *TERM = 
-    if (getenv())
-    // $TERM
-    return 0;
-}
+// size_t terminal_display_picture(void) 
+// {
+//     char *TERM = 
+//     if (getenv())
+//     // $TERM
+//     return 0;
+// }
