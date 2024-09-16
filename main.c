@@ -368,15 +368,6 @@ void build_url(char *CITY)
     snprintf(url, sizeof(url), "%s?access_key=%s&query=%s", BASE_URL, ACCESS_KEY, CITY);
 }
 
-<<<<<<< HEAD
-// size_t terminal_display_picture(void) 
-// {
-//     char *TERM = 
-//     if (getenv())
-//     // $TERM
-//     return 0;
-// }
-=======
 /* This function will check if you have the terminal image viewers installed, 
  * and if your terminal emulator can display a picture, if not you will be shown ascii.
 */
@@ -419,5 +410,3 @@ size_t terminal_display_picture(const cJSON *current)
     }
     return 0;
 }
-
->>>>>>> refs/remotes/origin/main
