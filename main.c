@@ -52,16 +52,14 @@ int main(int argc, char *argv[])
     }
 
     int int_key = fscanf(read_api_key_file, "%s", ACCESS_KEY);
-    
-    if (int_key == 0) {
-        fprintf(stderr, "No access key in file %s. \n", api_key_filename);
-        return 1;
-    }
+
     // fprintf(stdout, "api key: %s \n", ACCESS_KEY);
 
     /* This gives us the user input */
     if(argc == 2) {
         build_url(argv[1]);
+
+        // TODO: Filter for ü ä ö and replace it with ue ae oe 
 
         // fprintf(stdout, "The city you are checking is: %s\n", argv[1]);
     } else {
@@ -266,7 +264,7 @@ int main(int argc, char *argv[])
         observation_time = cJSON_GetObjectItemCaseSensitive(current, "observation_time");
 
         if (cJSON_IsString(observation_time) && (observation_time->valuestring != NULL)) {
-            fprintf(stdout, "- Time: %s.\n", observation_time->valuestring);
+            fprintf(stdout, "- Observation Time: %s.\n", observation_time->valuestring);
         }
 
         temperature = cJSON_GetObjectItemCaseSensitive(current, "temperature");
@@ -298,7 +296,7 @@ int main(int argc, char *argv[])
         humidity = cJSON_GetObjectItemCaseSensitive(current, "humidity");
         
         if (cJSON_IsNumber(humidity)) {
-            fprintf(stdout, "- Humidity: %i.\n", humidity->valueint);
+            fprintf(stdout, "- Humidity: %i%%.\n", humidity->valueint);
         }
 
         feelslike = cJSON_GetObjectItemCaseSensitive(current, "feelslike");
