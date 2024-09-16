@@ -32,7 +32,7 @@ long http_code = 0;
 
 size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream);
 void build_url(char *CITY);
-size_t terminal_display_picture(void);
+size_t terminal_display_picture(const cJSON *current);
 
 int main(int argc, char *argv[]) 
 {
@@ -368,6 +368,7 @@ void build_url(char *CITY)
     snprintf(url, sizeof(url), "%s?access_key=%s&query=%s", BASE_URL, ACCESS_KEY, CITY);
 }
 
+<<<<<<< HEAD
 // size_t terminal_display_picture(void) 
 // {
 //     char *TERM = 
@@ -375,3 +376,48 @@ void build_url(char *CITY)
 //     // $TERM
 //     return 0;
 // }
+=======
+/* This function will check if you have the terminal image viewers installed, 
+ * and if your terminal emulator can display a picture, if not you will be shown ascii.
+*/
+size_t terminal_display_picture(const cJSON *current) 
+{
+
+    // TODO: Determine if a cli of is installed, 
+    // if there is no cli there or the terminal cant display the picture try ascii
+    //
+    /* Terminal Image viewers 
+     *  timg
+     *  chafa
+    */
+
+    size_t result = 0;
+    const cJSON *picture= NULL;
+    char command[124];
+    const char *image_viewers[] = {"timg" , "chafa"};
+
+    // NOTE: Alactritty seems to show the image but at a really bad quality
+    const char *supported_terminals[] = { "xterm-ghostty", "kitty", "wezterm"};
+
+    // TODO: Check with terminal emulator the user is using
+    //
+    // smth like this: https://askubuntu.com/questions/210182/how-to-check-which-terminal-emulator-is-being-currently-used
+    if(current != NULL) {
+        picture = cJSON_GetObjectItemCaseSensitive(current, "picture");
+        if (cJSON_IsString(picture) && (picture->valuestring != NULL)) {
+            snprintf(command, sizeof(command), "%s > /dev/null", picture->valuestring);
+            result = system(command);
+        }
+    }
+
+    if (result == -1) {
+        fprintf(stderr, "Couldn't open picture with detected image viewer.\n");
+        return 1;
+    } else {
+        system(command);
+        return 0;
+    }
+    return 0;
+}
+
+>>>>>>> refs/remotes/origin/main
