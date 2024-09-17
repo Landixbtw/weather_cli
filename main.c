@@ -35,7 +35,7 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream);
 void build_url(char *CITY);
 size_t terminal_display_picture(const cJSON *current);
 void replace_umlaute(char *dest, wchar_t umlaut, size_t *j);
-void filter_char(const char *input, char *output, size_t output_size);
+void filter_char(const wchar_t input, char *output, size_t output_size);
 
 int main(int argc, char *argv[]) 
 {
@@ -424,7 +424,7 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
         case UMLAUT_U: replacement = "ue"; break;
 
         default : return; 
-    } 
+    }
 
     /* Die Klammern sind wichtig denn ohne die Klammern würden wir den 
      * Pointer erhöhen und nicht das value jetzt dereferencen wir und 
@@ -437,11 +437,14 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
 
 
 /* */
-void filter_char(const char *input, char *output, size_t output_size) {
+void filter_char(const wchar_t input, char *output, size_t output_size) {
     // TODO: Filter for ü ä ö and replace it with ue ae oe
     // filter the city before passing it to build_url
-    
-    for (int i = 0; i < strlen(input); i++) {
-    
-    }
+
+    size_t j = 0;
+    // for loop until \0
+    // if input[i] UMLAUT A O U then replace else nothing
+        replace_umlaute(output, input, &j);
+
+    // NULL TERMINATE OUTPUT STRING
 }
