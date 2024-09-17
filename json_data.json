@@ -1,1 +1,3 @@
-{"request":{"type":"City","query":"Muenchen, Germany","language":"en","unit":"m"},"location":{"name":"Muenchen","country":"Germany","region":"Bayern","lat":"48.150","lon":"11.583","timezone_id":"Europe\/Berlin","localtime":"2024-09-16 19:55","localtime_epoch":1726516500,"utc_offset":"2.0"},"current":{"observation_time":"05:55 PM","temperature":9,"weather_code":296,"weather_icons":["https:\/\/cdn.worldweatheronline.com\/images\/wsymbols01_png_64\/wsymbol_0033_cloudy_with_light_rain_night.png"],"weather_descriptions":["Light Rain, Light Drizzle And Rain"],"wind_speed":18,"wind_degree":249,"wind_dir":"WSW","pressure":1019,"precip":2.5,"humidity":100,"cloudcover":100,"feelslike":6,"uv_index":2,"visibility":10,"is_day":"no"}}
+<html><body><h1>400 Bad request</h1>
+Your browser sent an invalid request.
+</body></html>

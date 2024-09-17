@@ -8,6 +8,7 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <curl/urlapi.h>
+#include <wchar.h>
 
 #include "cJSON.h"
 
@@ -33,6 +34,8 @@ long http_code = 0;
 size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream);
 void build_url(char *CITY);
 size_t terminal_display_picture(const cJSON *current);
+void replace_umlaute(char *dest, wchar_t umlaut, size_t *j);
+void filter_char(const char *input, char *output, size_t output_size);
 
 int main(int argc, char *argv[]) 
 {
@@ -48,6 +51,7 @@ int main(int argc, char *argv[])
 
     if (read_api_key_file == NULL) {
         fprintf(stderr, "Error: Couldn't open file: %s\n", api_key_filename);
+        fopen(api_key_filename, "w+");
         return 1;
     }
 
@@ -57,11 +61,8 @@ int main(int argc, char *argv[])
 
     /* This gives us the user input */
     if(argc == 2) {
+
         build_url(argv[1]);
-
-        // TODO: Filter for ü ä ö and replace it with ue ae oe 
-
-        // fprintf(stdout, "The city you are checking is: %s\n", argv[1]);
     } else {
         fprintf(stderr, "Usage: %s <city>\nExample: %s New+York\n", PROGRAM_NAME, PROGRAM_NAME);
         fclose(read_api_key_file);
@@ -307,11 +308,7 @@ int main(int argc, char *argv[])
     }
 
 
-    // fprintf(stdout, "\n%s\n", json_string);
-
-
     // show the picture if possible
-
 
     fclose(temp_json_file);
     free(buffer);
@@ -407,4 +404,44 @@ size_t terminal_display_picture(const cJSON *current)
         return 0;
     }
     return 0;
+}
+
+
+enum umlaute {
+    UMLAUT_A = 228,
+    UMLAUT_O = 246,
+    UMLAUT_U = 252,
+};
+
+/* This function takes in the destination string and the char for ü ä ö, the size_t *j is there 
+ * to keep track  of the current possition in the whole destination string
+*/
+void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
+    const char *replacement;
+    switch(umlaut) {
+        case UMLAUT_A: replacement = "ae"; break;
+        case UMLAUT_O: replacement = "oe"; break;
+        case UMLAUT_U: replacement = "ue"; break;
+
+        default : return; 
+    } 
+
+    /* Die Klammern sind wichtig denn ohne die Klammern würden wir den 
+     * Pointer erhöhen und nicht das value jetzt dereferencen wir und 
+     * erhöhen dann das value
+    */
+
+    dest[(*j)++] = replacement[0];
+    dest[(*j)++] = replacement[1];
+}
+
+
+/* */
+void filter_char(const char *input, char *output, size_t output_size) {
+    // TODO: Filter for ü ä ö and replace it with ue ae oe
+    // filter the city before passing it to build_url
+    
+    for (int i = 0; i < strlen(input); i++) {
+    
+    }
 }
