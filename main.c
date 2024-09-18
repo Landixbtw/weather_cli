@@ -59,10 +59,15 @@ int main(int argc, char *argv[])
 
     // fprintf(stdout, "api key: %s \n", ACCESS_KEY);
 
+    char *url_string = NULL;
     /* This gives us the user input */
     if(argc == 2) {
+        for (int i = 0; i < strlen(argv[1]); i++) {
 
-        build_url(argv[1]);
+            // TODO: Convert argv[] one by one from char * to wchar_t
+            filter_char(argv[i], url_string, sizeof(char *));
+        }
+        build_url(url_string);
     } else {
         fprintf(stderr, "Usage: %s <city>\nExample: %s New+York\n", PROGRAM_NAME, PROGRAM_NAME);
         fclose(read_api_key_file);
@@ -306,7 +311,6 @@ int main(int argc, char *argv[])
             fprintf(stdout, "- Feels like: %i°C.\n", feelslike->valueint);
         }
     }
-
     fprintf(stdout, "%s\n", url);
     // show the picture if possible
 
