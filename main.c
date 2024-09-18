@@ -307,7 +307,7 @@ int main(int argc, char *argv[])
         }
     }
 
-
+    fprintf(stdout, "%s\n", url);
     // show the picture if possible
 
     fclose(temp_json_file);
@@ -413,11 +413,36 @@ enum umlaute {
     UMLAUT_U = 252,
 };
 
+
+/*  This function filters the characters it is given and determines if the wchar_t given
+ *  is a umlaut or not, if the input character is a umlaut it replaces it with the "normal" letters 
+*/
+void filter_char(const wchar_t input, char *output, size_t output_size) {
+    // TODO: Filter for ü ä ö and replace it with ue ae oe
+    // filter the city before passing it to build_url
+
+    size_t j = 0;
+    // if input[i] UMLAUT A O U then replace else nothing
+
+    switch(input) {
+        case UMLAUT_A : replace_umlaute(output, input, &j);
+        case UMLAUT_O : replace_umlaute(output, input, &j);
+        case UMLAUT_U : replace_umlaute(output, input, &j);
+        default : break ;
+    }
+
+    // NULL TERMINATE OUTPUT STRING
+}
+
+
 /* This function takes in the destination string and the char for ü ä ö, the size_t *j is there 
  * to keep track  of the current possition in the whole destination string
 */
 void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
+    // NOTE: wchar_t umlaut has to be a char and cant be a string because the 
+    // switch case statement doenst take a string
     const char *replacement;
+    
     switch(umlaut) {
         case UMLAUT_A: replacement = "ae"; break;
         case UMLAUT_O: replacement = "oe"; break;
@@ -435,16 +460,3 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
     dest[(*j)++] = replacement[1];
 }
 
-
-/* */
-void filter_char(const wchar_t input, char *output, size_t output_size) {
-    // TODO: Filter for ü ä ö and replace it with ue ae oe
-    // filter the city before passing it to build_url
-
-    size_t j = 0;
-    // for loop until \0
-    // if input[i] UMLAUT A O U then replace else nothing
-        replace_umlaute(output, input, &j);
-
-    // NULL TERMINATE OUTPUT STRING
-}
