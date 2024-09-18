@@ -8,4 +8,4 @@ CORRECT FORMAT: YOUR_ACCESS_KEY
 WRONG FORMAT: access_key=YOUR_ACCESS_KEY  
 
 You need curl -> https://curl.se/download.html  
-Weatherstack sign up -> https://weatherstack.com/signup/free
+Weatherstack key -> https://weatherstack.com/signup/free
