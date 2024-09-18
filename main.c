@@ -65,7 +65,8 @@ int main(int argc, char *argv[])
         for (int i = 0; i < strlen(argv[1]); i++) {
 
             // TODO: Convert argv[] one by one from char * to wchar_t
-            filter_char(argv[i], url_string, sizeof(char *));
+            // look at stdlib mbtowc() and/or mbstowcs()
+            filter_char(argv[i], url_string, sizeof(url_string));
         }
         build_url(url_string);
     } else {
