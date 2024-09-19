@@ -51,24 +51,29 @@ int main(int argc, char *argv[])
 
     if (read_api_key_file == NULL) {
         fprintf(stderr, "Error: Couldn't open file: %s\n", api_key_filename);
-        fopen(api_key_filename, "w+");
         return 1;
     }
 
     int int_key = fscanf(read_api_key_file, "%s", ACCESS_KEY);
 
-    // fprintf(stdout, "api key: %s \n", ACCESS_KEY);
-
     char *url_string = NULL;
     /* This gives us the user input */
-    if(argc == 2) {
+    if(argc == 2) { 
+        wchar_t input_char;
+
+        // copy one for one directly to input_char 
+        for (int i = 0; i < strlen(argv[1]); i++) {
+
+        }
+
         for (int i = 0; i < strlen(argv[1]); i++) {
 
             // TODO: Convert argv[] one by one from char * to wchar_t
             // look at stdlib mbtowc() and/or mbstowcs()
-            filter_char(argv[i], url_string, sizeof(url_string));
+            filter_char(input_char, url_string, sizeof(url_string));
         }
-        build_url(url_string);
+        fprintf(stdout, "city you are looking for: %s\n", argv[1]);
+        build_url(argv[1]);
     } else {
         fprintf(stderr, "Usage: %s <city>\nExample: %s New+York\n", PROGRAM_NAME, PROGRAM_NAME);
         fclose(read_api_key_file);
@@ -95,7 +100,7 @@ int main(int argc, char *argv[])
         */
 
         // wb = write binary
-        temp_json_file = fopen("json_data.json", "wb");
+        temp_json_file = fopen("json_data.json", "wb+");
 
         if (temp_json_file) {
 
@@ -315,6 +320,7 @@ int main(int argc, char *argv[])
     fprintf(stdout, "%s\n", url);
     // show the picture if possible
 
+    fclose(read_api_key_file);
     fclose(temp_json_file);
     free(buffer);
     free(json_string);
@@ -464,4 +470,3 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
     dest[(*j)++] = replacement[0];
     dest[(*j)++] = replacement[1];
 }
-
