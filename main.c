@@ -4,11 +4,11 @@
 #include <errno.h>
 #include <string.h>
 #include <stdbool.h>
+#include <wchar.h>
 
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <curl/urlapi.h>
-#include <wchar.h>
 
 #include "cJSON.h"
 
@@ -35,7 +35,17 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream);
 void build_url(char *CITY);
 size_t terminal_display_picture(const cJSON *current);
 void replace_umlaute(char *dest, wchar_t umlaut, size_t *j);
-void filter_char(const wchar_t input, char *output, size_t output_size);
+char *filter_char(const wchar_t input, size_t output_size);
+
+enum umlaute {
+    UMLAUT_BIG_A = 196,
+    UMLAUT_BIG_O = 214,
+    UMLAUT_BIG_U = 220,
+    UMLAUT_SMALL_A = 228,
+    UMLAUT_SMALL_O = 246, 
+    UMLAUT_SMALL_U = 252,
+};
+
 
 int main(int argc, char *argv[]) 
 {
@@ -59,21 +69,19 @@ int main(int argc, char *argv[])
     char *url_string = NULL;
     /* This gives us the user input */
     if(argc == 2) { 
-        wchar_t input_char;
+        // for (int i = 0; strlen(argv[1]); i++) {
+        //     if (strncmp(&argv[1][i], "ü", 2) || strncmp(&argv[1][i], "Ü", 2)) {
+        //         // fprintf(stdout, "argv: %s", &argv[1][i]);
+        //         filter_char(argv[1][i], sizeof(char *));
+        //     }
+        // }
 
-        // copy one for one directly to input_char 
-        for (int i = 0; i < strlen(argv[1]); i++) {
-
-        }
-
-        for (int i = 0; i < strlen(argv[1]); i++) {
-
-            // TODO: Convert argv[] one by one from char * to wchar_t
-            // look at stdlib mbtowc() and/or mbstowcs()
-            filter_char(input_char, url_string, sizeof(url_string));
-        }
         fprintf(stdout, "city you are looking for: %s\n", argv[1]);
-        build_url(argv[1]);
+        fprintf(stdout, "city you are looking for: %s\n", url_string);
+
+        // build_url(url_string);
+
+        return 0;
     } else {
         fprintf(stderr, "Usage: %s <city>\nExample: %s New+York\n", PROGRAM_NAME, PROGRAM_NAME);
         fclose(read_api_key_file);
@@ -353,10 +361,10 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 {
     /* (FILE *) stream  is a so called cast operation. In this case the cast basically says
      *
+     * "I know this void * pointer is actually pointing to a FILE structure, so it's safe to treat it as a FILE * "
+     *
      * NOTE: I got help from claude, explaining this function. I obviously, 
      * took it from the libcurl website but I understand it thanks to claude explaining it.
-     *
-     * "I know this void * pointer is actually pointing to a FILE structure, so it's safe to treat it as a FILE * "
     */
     size_t written = fwrite(ptr, size, nmemb, (FILE *) stream);
 
@@ -418,31 +426,27 @@ size_t terminal_display_picture(const cJSON *current)
 }
 
 
-enum umlaute {
-    UMLAUT_A = 228,
-    UMLAUT_O = 246,
-    UMLAUT_U = 252,
-};
-
-
 /*  This function filters the characters it is given and determines if the wchar_t given
  *  is a umlaut or not, if the input character is a umlaut it replaces it with the "normal" letters 
 */
-void filter_char(const wchar_t input, char *output, size_t output_size) {
-    // TODO: Filter for ü ä ö and replace it with ue ae oe
-    // filter the city before passing it to build_url
+char *filter_char(const wchar_t input, size_t output_size) {
+    // output size sizeof(wchar_t)
+
+    char *output;
 
     size_t j = 0;
     // if input[i] UMLAUT A O U then replace else nothing
 
     switch(input) {
-        case UMLAUT_A : replace_umlaute(output, input, &j);
-        case UMLAUT_O : replace_umlaute(output, input, &j);
-        case UMLAUT_U : replace_umlaute(output, input, &j);
+        case UMLAUT_BIG_A : replace_umlaute(output, input, &j);
+        case UMLAUT_BIG_O : replace_umlaute(output, input, &j);
+        case UMLAUT_BIG_U : replace_umlaute(output, input, &j);
+        case UMLAUT_SMALL_A : replace_umlaute(output, input, &j);
+        case UMLAUT_SMALL_O : replace_umlaute(output, input, &j);
+        case UMLAUT_SMALL_U : replace_umlaute(output, input, &j);
         default : break ;
     }
-
-    // NULL TERMINATE OUTPUT STRING
+    return output;
 }
 
 
@@ -450,17 +454,24 @@ void filter_char(const wchar_t input, char *output, size_t output_size) {
  * to keep track  of the current possition in the whole destination string
 */
 void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
+
     // NOTE: wchar_t umlaut has to be a char and cant be a string because the 
     // switch case statement doenst take a string
     const char *replacement;
     
     switch(umlaut) {
-        case UMLAUT_A: replacement = "ae"; break;
-        case UMLAUT_O: replacement = "oe"; break;
-        case UMLAUT_U: replacement = "ue"; break;
+        case UMLAUT_BIG_A: replacement = "AE"; break;
+        case UMLAUT_BIG_O: replacement = "OE"; break;
+        case UMLAUT_BIG_U: replacement = "UE"; break;
 
-        default : return; 
+        case UMLAUT_SMALL_A: replacement = "ae"; break;
+        case UMLAUT_SMALL_O: replacement = "oe"; break;
+        case UMLAUT_SMALL_U: replacement = "ue"; break;
+
+
+        default : break; 
     }
+
 
     /* Die Klammern sind wichtig denn ohne die Klammern würden wir den 
      * Pointer erhöhen und nicht das value jetzt dereferencen wir und 
