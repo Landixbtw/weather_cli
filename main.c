@@ -69,12 +69,20 @@ int main(int argc, char *argv[])
     char *url_string = NULL;
     /* This gives us the user input */
     if(argc == 2) { 
-        // for (int i = 0; strlen(argv[1]); i++) {
-        //     if (strncmp(&argv[1][i], "ü", 2) || strncmp(&argv[1][i], "Ü", 2)) {
-        //         // fprintf(stdout, "argv: %s", &argv[1][i]);
-        //         filter_char(argv[1][i], sizeof(char *));
-        //     }
-        // }
+        // FIX: This gives a bus error
+
+        printf("---------------------------\n");
+        for (int i = 0; strlen(argv[1]); i++) {
+            if (strncmp(&argv[1][i], "ü", 2) || strncmp(&argv[1][i], "Ü", 2)) {
+
+                fprintf(stdout, "%c", argv[1][i]);
+                // filter_char(argv[1][i], sizeof(char *));
+            }
+        }
+
+        printf("---------------------------\n");
+        fprintf(stdout, "%s", argv[1]);
+        printf("\n");
 
         fprintf(stdout, "city you are looking for: %s\n", argv[1]);
         fprintf(stdout, "city you are looking for: %s\n", url_string);
