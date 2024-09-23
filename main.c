@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <wchar.h>
+#include <locale.h>
 
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -46,7 +47,6 @@ enum umlaute {
     UMLAUT_SMALL_U = 252,
 };
 
-
 int main(int argc, char *argv[]) 
 {
     CURL *curl = curl_easy_init();
@@ -69,21 +69,18 @@ int main(int argc, char *argv[])
     char *url_string = NULL;
     /* This gives us the user input */
     if(argc == 2) { 
-        // FIX: This gives a bus error
 
-        printf("---------------------------\n");
-        for (int i = 0; strlen(argv[1]); i++) {
-            if (strncmp(&argv[1][i], "ü", 2) || strncmp(&argv[1][i], "Ü", 2)) {
-
-                fprintf(stdout, "%c", argv[1][i]);
-                // filter_char(argv[1][i], sizeof(char *));
+        url_string = argv[1];
+        for (int i = 0; i <= strlen(argv[1]); i++) {
+            fprintf(stdout, "%c\n", argv[1][i]);
+            // for some reason string matches umlaut is being printed when there is no üÜ in the word e.g. berlin
+            if (strncmp(&argv[1][i], "ü", strlen(argv[1])) || strncmp(&argv[1][i], "Ü", strlen(argv[1]))) {
+                printf("string matches umlaut.\n");
+                // url_string = filter_char(argv[1][i], sizeof(char *));
             }
         }
 
-        printf("---------------------------\n");
-        fprintf(stdout, "%s", argv[1]);
-        printf("\n");
-
+        fprintf(stdout, "\n");
         fprintf(stdout, "city you are looking for: %s\n", argv[1]);
         fprintf(stdout, "city you are looking for: %s\n", url_string);
 
@@ -96,7 +93,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // FIX: Error handling for cities that dont exist / and or partial city names ? Api just gives a city with the same few letters
+    // FIX: Error handling for cities that dont exist / and or partial city names ? Api just autocompletes to some random city
 
     /*
      * we first need to make a call to the weatherstack api to get the json data
