@@ -72,8 +72,6 @@ int main(int argc, char *argv[])
         url_string = argv[1];
         url_string= transliterate_umlaut(argv[1]);
 
-        fprintf(stdout, "\n");
-
         build_url(url_string);
         free(transliterated);
     } else {
@@ -461,7 +459,7 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
     // NOTE: wchar_t umlaut has to be a char and cant be a string because the 
     // switch case statement doenst take a string
     const char *replacement;
-    
+
     switch(umlaut) {
         case UMLAUT_BIG_A: replacement = "AE"; break;
         case UMLAUT_BIG_O: replacement = "OE"; break;
@@ -488,10 +486,10 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
     dest[(*j)++] = replacement[1];
 }
 
-// NOTE: the transliterate_umlaut function is from claude.ai
-// above is my attempt I tried for days but got nowhere. I dont think I wouldve figured
-// this out I was on the wrong path
-
+/*  NOTE: the transliterate_umlaut function is from claude.ai
+*   above is my attempt I tried for days but got nowhere. I dont think I wouldve figured
+*   this out I was on the wrong path
+*/
 char* transliterate_umlaut(const char* input) {
     size_t len = strlen(input);
     char* output = malloc(len * 2 + 1); // Worst case: every char is an umlaut
