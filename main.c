@@ -30,13 +30,13 @@ char *units = "m";
 long http_code = 0;
 
 
-// FIX: If the city the user enters and the city in the json dont match print error
-
 size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream);
 void build_url(char *CITY);
 size_t terminal_display_picture(const cJSON *current);
+//
 void replace_umlaute(char *dest, wchar_t umlaut, size_t *j);
 char *filter_char(const wchar_t input, size_t output_size);
+//
 char* transliterate_umlaut(const char* input);
 
 
@@ -68,18 +68,14 @@ int main(int argc, char *argv[])
     /* This gives us the user input */
     if(argc == 2) { 
         char *transliterated = NULL;
+
         url_string = argv[1];
-        
         url_string= transliterate_umlaut(argv[1]);
 
         fprintf(stdout, "\n");
-        fprintf(stdout, "city you are looking for: %s\n", argv[1]);
-        fprintf(stdout, "city you are looking for: %s\n", url_string);
 
         build_url(url_string);
-
         free(transliterated);
-        return 0;
     } else {
         fprintf(stderr, "Usage: %s <city>\nExample: %s New+York\n", PROGRAM_NAME, PROGRAM_NAME);
         fclose(read_api_key_file);
@@ -323,7 +319,7 @@ int main(int argc, char *argv[])
             fprintf(stdout, "- Feels like: %i°C.\n", feelslike->valueint);
         }
     }
-    fprintf(stdout, "%s\n", url);
+
     // show the picture if possible
 
     fclose(read_api_key_file);
