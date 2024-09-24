@@ -37,15 +37,8 @@ void build_url(char *CITY);
 size_t terminal_display_picture(const cJSON *current);
 void replace_umlaute(char *dest, wchar_t umlaut, size_t *j);
 char *filter_char(const wchar_t input, size_t output_size);
+char* transliterate_umlaut(const char* input);
 
-enum umlaute {
-    UMLAUT_BIG_A = 196,
-    UMLAUT_BIG_O = 214,
-    UMLAUT_BIG_U = 220,
-    UMLAUT_SMALL_A = 228,
-    UMLAUT_SMALL_O = 246, 
-    UMLAUT_SMALL_U = 252,
-};
 
 int main(int argc, char *argv[]) 
 {
@@ -66,26 +59,26 @@ int main(int argc, char *argv[])
 
     int int_key = fscanf(read_api_key_file, "%s", ACCESS_KEY);
 
+    if (!setlocale(LC_CTYPE, "de_DE.UTF-8")) {
+        fprintf(stderr, "Can't set the specified locale!\n Check LANG, LC_CTYPE, LC_ALL.\n");
+        return 1;
+    }
+
     char *url_string = NULL;
     /* This gives us the user input */
     if(argc == 2) { 
-
+        char *transliterated = NULL;
         url_string = argv[1];
-        for (int i = 0; i <= strlen(argv[1]); i++) {
-            fprintf(stdout, "%c\n", argv[1][i]);
-            // for some reason string matches umlaut is being printed when there is no üÜ in the word e.g. berlin
-            if (strncmp(&argv[1][i], "ü", strlen(argv[1])) || strncmp(&argv[1][i], "Ü", strlen(argv[1]))) {
-                printf("string matches umlaut.\n");
-                // url_string = filter_char(argv[1][i], sizeof(char *));
-            }
-        }
+        
+        url_string= transliterate_umlaut(argv[1]);
 
         fprintf(stdout, "\n");
         fprintf(stdout, "city you are looking for: %s\n", argv[1]);
         fprintf(stdout, "city you are looking for: %s\n", url_string);
 
-        // build_url(url_string);
+        build_url(url_string);
 
+        free(transliterated);
         return 0;
     } else {
         fprintf(stderr, "Usage: %s <city>\nExample: %s New+York\n", PROGRAM_NAME, PROGRAM_NAME);
@@ -431,6 +424,15 @@ size_t terminal_display_picture(const cJSON *current)
 }
 
 
+enum umlaute {
+    UMLAUT_BIG_A = 196,
+    UMLAUT_BIG_O = 214,
+    UMLAUT_BIG_U = 220,
+    UMLAUT_SMALL_A = 228,
+    UMLAUT_SMALL_O = 246, 
+    UMLAUT_SMALL_U = 252,
+};
+
 /*  This function filters the characters it is given and determines if the wchar_t given
  *  is a umlaut or not, if the input character is a umlaut it replaces it with the "normal" letters 
 */
@@ -477,6 +479,9 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
         default : break; 
     }
 
+    printf("-------------------\n");
+    printf("UMLAUT_BIG_A: %i", UMLAUT_BIG_A);
+
 
     /* Die Klammern sind wichtig denn ohne die Klammern würden wir den 
      * Pointer erhöhen und nicht das value jetzt dereferencen wir und 
@@ -485,4 +490,44 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
 
     dest[(*j)++] = replacement[0];
     dest[(*j)++] = replacement[1];
+}
+
+// NOTE: the transliterate_umlaut function is from claude.ai
+// above is my attempt I tried for days but got nowhere. I dont think I wouldve figured
+// this out I was on the wrong path
+
+char* transliterate_umlaut(const char* input) {
+    size_t len = strlen(input);
+    char* output = malloc(len * 2 + 1); // Worst case: every char is an umlaut
+    size_t j = 0;
+
+    for (size_t i = 0; i < len; ) {
+        if ((unsigned char)input[i] == 0xC3) {
+            switch ((unsigned char)input[i + 1]) {
+                case 0xA4: // ä
+                case 0x84: // Ä
+                    output[j++] = 'a';
+                    output[j++] = 'e';
+                    break;
+                case 0xB6: // ö
+                case 0x96: // Ö
+                    output[j++] = 'o';
+                    output[j++] = 'e';
+                    break;
+                case 0xBC: // ü
+                case 0x9C: // Ü
+                    output[j++] = 'u';
+                    output[j++] = 'e';
+                    break;
+                default:
+                    output[j++] = input[i];
+                    output[j++] = input[i + 1];
+            }
+            i += 2;
+        } else {
+            output[j++] = input[i++];
+        }
+    }
+    output[j] = '\0';
+    return output;
 }
