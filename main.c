@@ -222,6 +222,7 @@ int main(int argc, char *argv[])
     const cJSON *wind_speed = NULL;
     const cJSON *humidity = NULL;
     const cJSON *feelslike = NULL;
+    const cJSON *weather_icons = NULL;
 
     /* We can't access name directly since its nested, so we first need to 
      * parse everything and then parse location 
@@ -316,6 +317,10 @@ int main(int argc, char *argv[])
         if (cJSON_IsNumber(feelslike)) {
             fprintf(stdout, "- Feels like: %i°C.\n", feelslike->valueint);
         }
+
+        if (&terminal_display_picture) {
+            terminal_display_picture(current);
+        }
     }
 
     // show the picture if possible
@@ -389,8 +394,9 @@ size_t terminal_display_picture(const cJSON *current)
     */
 
     size_t result = 0;
-    const cJSON *picture= NULL;
-    char command[124];
+    const cJSON *weather_icons_array_item = NULL;
+    const cJSON *weather_icons_array = NULL;
+    char *command = malloc(sizeof(char *) * 124);
     const char *image_viewers[] = {"timg" , "chafa"};
 
     // NOTE: Alactritty seems to show the image but at a really bad quality
@@ -408,7 +414,7 @@ size_t terminal_display_picture(const cJSON *current)
         result_terminal_emulator = system(get_terminal_emulator_LINUX);
 
         if(current != NULL) {
-            picture = cJSON_GetObjectItemCaseSensitive(current, "picture");
+            picture = cJSON_GetObjectItemCaseSensitive(current, "weather_icons");
             if (cJSON_IsString(picture) && (picture->valuestring != NULL)) {
                 snprintf(command, sizeof(command), "%s > /dev/null", picture->valuestring);
                 result = system(command);
@@ -423,8 +429,18 @@ size_t terminal_display_picture(const cJSON *current)
         }
     #endif 
 
-    #ifdef TARGET_OS_MAC
-        char *get_terminal_emulator_OS_MAC = "";
+    #ifdef __APPLE__
+
+        fprintf(stdout, "MacOS Detected \n");
+        char *get_terminal_emulator_OS_MAC = "echo $TERM_PROGRAM";
+
+        // der output von get_terminal_emulator_OS_MAC muss gegen den array von unterstützen terminals überprüft werden. 
+        // und dann muss man noch schauen welche image_vewer der user hat und dann das beide in den command gepumpt werden
+        // und 
+
+        char *user_image_viewer;
+        char *terminal_emulator_name_OS_MAC; 
+        system(get_terminal_emulator_OS_MAC);
 
         result_terminal_emulator = system(get_terminal_emulator_OS_MAC);
 
@@ -433,10 +449,13 @@ size_t terminal_display_picture(const cJSON *current)
             return 1;
         } else {
             if(current != NULL) {
-                picture = cJSON_GetObjectItemCaseSensitive(current, "picture");
-                if (cJSON_IsString(picture) && (picture->valuestring != NULL)) {
-                    snprintf(command, sizeof(command), "%s > /dev/null", picture->valuestring);
-                    result = system(command);
+                weather_icons_array = cJSON_GetObjectItemCaseSensitive(current, "weather_icons");
+                if (cJSON_IsArray(weather_icons_array)) {
+                    weather_icons_array_item = cJSON_GetArrayItem(weather_icons_array, 0);
+                    if (cJSON_IsString(weather_icons_array_item) && (weather_icons_array_item->valuestring != NULL)) {
+                        snprintf(command, sizeof(command), "%s %s> /dev/null", user_image_viewer, weather_icons_array_item->valuestring);
+                        result = system(command);
+                    }
                 }
             }
 
@@ -444,7 +463,8 @@ size_t terminal_display_picture(const cJSON *current)
                 fprintf(stderr, "Couldn't open image.\n");
                 return 1;
             } else {
-                system(get_terminal_emulator_OS_MAC);
+                system(command);
+                printf("%s", command);
             }
         }
     #endif
