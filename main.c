@@ -407,17 +407,24 @@ size_t terminal_display_picture(const cJSON *current)
     // smth like this: https://askubuntu.com/questions/210182/how-to-check-which-terminal-emulator-is-being-currently-used
 
     int result_terminal_emulator;
-    
-    #if __linux__
-        char *get_terminal_emulator_LINUX = "basename \"/\"(ps -o cmd -f -p (cat /proc/(echo %self)/stat | cut -d \\  -f 4) | tail -1 | sed 's/ .*$//')";
 
-        result_terminal_emulator = system(get_terminal_emulator_LINUX);
+    // der output von get_terminal_emulator_OS_MAC muss gegen den array von unterstützen terminals überprüft werden. 
+    // und dann muss man noch schauen welche image_vewer der user hat und dann das beide in den command gepumpt werden
+
+    // TODO:  https://stackoverflow.com/questions/646241/c-run-a-system-command-and-get-output
+    #if __linux__
+        char *get_terminal_emulator_OS_LINUX = "basename \"/\"(ps -o cmd -f -p (cat /proc/(echo %self)/stat | cut -d \\  -f 4) | tail -1 | sed 's/ .*$//')";
+
+        result_terminal_emulator = system(get_terminal_emulator_OS_LINUX);
 
         if(current != NULL) {
-            picture = cJSON_GetObjectItemCaseSensitive(current, "weather_icons");
-            if (cJSON_IsString(picture) && (picture->valuestring != NULL)) {
-                snprintf(command, sizeof(command), "%s > /dev/null", picture->valuestring);
-                result = system(command);
+            weather_icons_array = cJSON_GetObjectItemCaseSensitive(current, "weather_icons");
+            if (cJSON_IsArray(weather_icons_array)) {
+                weather_icons_array_item = cJSON_GetArrayItem(weather_icons_array, 0);
+                if (cJSON_IsString(weather_icons_array_item) && (weather_icons_array_item->valuestring != NULL)) {
+                    snprintf(command, sizeof(command), "%s %s > /dev/null", user_image_viewer, weather_icons_array_item->valuestring);
+                    result = system(command);
+                }
             }
         }
 
