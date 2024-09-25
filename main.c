@@ -3,13 +3,11 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include <stdbool.h>
 #include <wchar.h>
 #include <locale.h>
 
 #include <curl/curl.h>
 #include <curl/easy.h>
-#include <curl/urlapi.h>
 
 #include "cJSON.h"
 
@@ -412,6 +410,9 @@ size_t terminal_display_picture(const cJSON *current)
     // und dann muss man noch schauen welche image_vewer der user hat und dann das beide in den command gepumpt werden
 
     // TODO:  https://stackoverflow.com/questions/646241/c-run-a-system-command-and-get-output
+
+    char *user_image_viewer;
+
     #if __linux__
         char *get_terminal_emulator_OS_LINUX = "basename \"/\"(ps -o cmd -f -p (cat /proc/(echo %self)/stat | cut -d \\  -f 4) | tail -1 | sed 's/ .*$//')";
 
@@ -445,8 +446,7 @@ size_t terminal_display_picture(const cJSON *current)
         // und dann muss man noch schauen welche image_vewer der user hat und dann das beide in den command gepumpt werden
         // und 
 
-        char *user_image_viewer;
-        char *terminal_emulator_name_OS_MAC; 
+        char *terminal_emulator_name_OS_MAC;
         system(get_terminal_emulator_OS_MAC);
 
         result_terminal_emulator = system(get_terminal_emulator_OS_MAC);
