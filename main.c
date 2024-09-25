@@ -394,26 +394,61 @@ size_t terminal_display_picture(const cJSON *current)
     const char *image_viewers[] = {"timg" , "chafa"};
 
     // NOTE: Alactritty seems to show the image but at a really bad quality
-    const char *supported_terminals[] = { "xterm-ghostty", "kitty", "wezterm"};
+    const char *supported_terminals[] = { "ghostty", "kitty", "wezterm"};
 
     // TODO: Check with terminal emulator the user is using
     //
     // smth like this: https://askubuntu.com/questions/210182/how-to-check-which-terminal-emulator-is-being-currently-used
-    if(current != NULL) {
-        picture = cJSON_GetObjectItemCaseSensitive(current, "picture");
-        if (cJSON_IsString(picture) && (picture->valuestring != NULL)) {
-            snprintf(command, sizeof(command), "%s > /dev/null", picture->valuestring);
-            result = system(command);
-        }
-    }
 
-    if (result == -1) {
-        fprintf(stderr, "Couldn't open picture with detected image viewer.\n");
-        return 1;
-    } else {
-        system(command);
-        return 0;
-    }
+    int result_terminal_emulator;
+    
+    #if __linux__
+        char *get_terminal_emulator_LINUX = "basename \"/\"(ps -o cmd -f -p (cat /proc/(echo %self)/stat | cut -d \\  -f 4) | tail -1 | sed 's/ .*$//')";
+
+        result_terminal_emulator = system(get_terminal_emulator_LINUX);
+
+        if(current != NULL) {
+            picture = cJSON_GetObjectItemCaseSensitive(current, "picture");
+            if (cJSON_IsString(picture) && (picture->valuestring != NULL)) {
+                snprintf(command, sizeof(command), "%s > /dev/null", picture->valuestring);
+                result = system(command);
+            }
+        }
+
+        if (result == -1) {
+            fprintf(stderr, "Couldn't open image.\n");
+            return 1;
+        } else {
+            system(get_terminal_emulator_OS_LINUX);
+        }
+    #endif 
+
+    #ifdef TARGET_OS_MAC
+        char *get_terminal_emulator_OS_MAC = "";
+
+        result_terminal_emulator = system(get_terminal_emulator_OS_MAC);
+
+        if (result_terminal_emulator == -1) {
+            fprintf(stderr, "Couldn't determine terminal emulator");
+            return 1;
+        } else {
+            if(current != NULL) {
+                picture = cJSON_GetObjectItemCaseSensitive(current, "picture");
+                if (cJSON_IsString(picture) && (picture->valuestring != NULL)) {
+                    snprintf(command, sizeof(command), "%s > /dev/null", picture->valuestring);
+                    result = system(command);
+                }
+            }
+
+            if (result == -1) {
+                fprintf(stderr, "Couldn't open image.\n");
+                return 1;
+            } else {
+                system(get_terminal_emulator_OS_MAC);
+            }
+        }
+    #endif
+
     return 0;
 }
 
