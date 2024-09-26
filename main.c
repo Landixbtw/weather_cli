@@ -8,7 +8,6 @@
 #include <locale.h>
 #include <unistd.h>
 
-
 #include <curl/curl.h>
 #include <curl/easy.h>
 
@@ -602,10 +601,14 @@ char *get_terminal_emulator_name(void)
 
     // *p*arent *p*rocess *id*
     pid_t ppid = getppid();
+
+    // TODO: This gives the shell not the terminal emulator name 
+
     char proc_path[256];
 
     snprintf(proc_path, sizeof(proc_path), "/proc/%d/cmdline", ppid);
     printf("proc_path: %s\n", proc_path);
+
 
     FILE *f = fopen(proc_path, "r");
     if (f == NULL) {
