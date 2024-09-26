@@ -3,8 +3,11 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/types.h>
 #include <wchar.h>
 #include <locale.h>
+#include <unistd.h>
+
 
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -36,7 +39,7 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j);
 char *filter_char(const wchar_t input, size_t output_size);
 //
 char* transliterate_umlaut(const char* input);
-
+char *get_terminal_emulator_name(void);
 
 int main(int argc, char *argv[]) 
 {
@@ -412,19 +415,16 @@ size_t terminal_display_picture(const cJSON *current)
     // TODO:  https://stackoverflow.com/questions/646241/c-run-a-system-command-and-get-output
 
     char *user_image_viewer;
+    char *terminal_emulator_name_OS_LINUX = get_terminal_emulator_name();
 
     #if __linux__
-        char *get_terminal_emulator_OS_LINUX = "basename \"/\"(ps -o cmd -f -p (cat /proc/(echo %self)/stat | cut -d \\  -f 4) | tail -1 | sed 's/ .*$//')";
-
-        result_terminal_emulator = system(get_terminal_emulator_OS_LINUX);
-
         if(current != NULL) {
             weather_icons_array = cJSON_GetObjectItemCaseSensitive(current, "weather_icons");
             if (cJSON_IsArray(weather_icons_array)) {
                 weather_icons_array_item = cJSON_GetArrayItem(weather_icons_array, 0);
                 if (cJSON_IsString(weather_icons_array_item) && (weather_icons_array_item->valuestring != NULL)) {
-                    snprintf(command, sizeof(command), "%s %s > /dev/null", user_image_viewer, weather_icons_array_item->valuestring);
-                    result = system(command);
+                    // snprintf(command, sizeof(command), "%s %s", user_image_viewer, weather_icons_array_item->valuestring);
+                    // result = system(command);
                 }
             }
         }
@@ -433,7 +433,8 @@ size_t terminal_display_picture(const cJSON *current)
             fprintf(stderr, "Couldn't open image.\n");
             return 1;
         } else {
-            system(get_terminal_emulator_OS_LINUX);
+            // printf("%ld\n", result);
+            // system(command);
         }
     #endif 
 
@@ -460,7 +461,7 @@ size_t terminal_display_picture(const cJSON *current)
                 if (cJSON_IsArray(weather_icons_array)) {
                     weather_icons_array_item = cJSON_GetArrayItem(weather_icons_array, 0);
                     if (cJSON_IsString(weather_icons_array_item) && (weather_icons_array_item->valuestring != NULL)) {
-                        snprintf(command, sizeof(command), "%s %s> /dev/null", user_image_viewer, weather_icons_array_item->valuestring);
+                        snprintf(command, sizeof(command), "%s %s", user_image_viewer, weather_icons_array_item->valuestring);
                         result = system(command);
                     }
                 }
@@ -587,3 +588,58 @@ char* transliterate_umlaut(const char* input) {
     output[j] = '\0';
     return output;
 }
+
+/* This is 50/50 me and claude.ai */
+char *get_terminal_emulator_name(void)
+{
+    char *terminal_name;
+
+    /*
+    * We can start by getting the parent process ID of our program.
+    * Then, we can read the command line of that parent process from the /proc filesystem.
+    * The command line often (but not always) includes the name of the terminal emulator.
+    */
+
+    // *p*arent *p*rocess *id*
+    pid_t ppid = getppid();
+    char proc_path[256];
+
+    snprintf(proc_path, sizeof(proc_path), "/proc/%d/cmdline", ppid);
+    printf("proc_path: %s\n", proc_path);
+
+    FILE *f = fopen(proc_path, "r");
+    if (f == NULL) {
+        perror("Failed to open proc file\n");
+        return NULL;
+    }
+
+
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read = getline(&line, &len, f);
+    fclose(f);
+
+    if (read == -1) {
+        free(line);
+        return NULL;
+    }
+
+    // Extract the terminal emulator name from the command line
+    // This part will depend on the specific format of your system
+    terminal_name = strrchr(line, '/');
+    if (terminal_name) {
+        terminal_name++; // Move past the '/'
+    } else {
+        terminal_name = line;
+    }
+
+    // Remove any arguments
+    char *space = strchr(terminal_name, ' ');
+    if (space) *space = '\0';
+
+    printf("terminal name: %s\n", terminal_name);
+    return terminal_name;
+}
+
+
+
