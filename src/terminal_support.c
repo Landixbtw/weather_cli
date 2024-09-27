@@ -97,13 +97,13 @@ size_t terminal_display_picture(const cJSON *current)
     char *command = malloc(sizeof(char *) * 124);
 
     // These are all the image viewers that are "supported"
-    const char *supported_image_viewers[] = {"timg" , "chafa"};
+    const char *supported_image_viewers[] = { "timg" , "chafa" };
     // This is the image viewer that is both on the user system and installed
     char *user_image_viewer;
 
 
     // NOTE: Alactritty seems to show the image but at a really bad quality
-    const char *supported_terminals[] = { "ghostty", "kitty", "wezterm"};
+    const char *supported_terminals[] = { "ghostty", "kitty", "wezterm" };
 
 
     // TODO: With the terminal emulator name we got check against the array, if its in there pass it to the command
@@ -119,13 +119,21 @@ size_t terminal_display_picture(const cJSON *current)
 
         // BUG: This line is printing "feelslike" as an image viewer although its not in the array
         // BUG: This line is causing a segfault
+        //
+        // output is 
+        // timg
+        // chafa
+        // feelslike
+        // segfault
+        //
         printf("%s\n", supported_image_viewers[i]);
         // snprintf(command, sizeof(command), "%s", supported_image_viewers[i]);
         // result = system(command);
 
-        // if (result == -1) {
-        //     fprintf(stderr, "bla bla bla errorcode: %i", result);
-        // }
+        if (result == -1) {
+            fprintf(stderr, "bla bla bla errorcode: %i\n", result);
+            break;
+        }
 
         // tmp_img_vwr = user_image_viewer;
     }

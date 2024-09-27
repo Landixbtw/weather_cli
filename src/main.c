@@ -313,9 +313,9 @@ int main(int argc, char *argv[])
             fprintf(stdout, "- Feels like: %i°C.\n", feelslike->valueint);
         }
 
-        // if (&terminal_display_picture) {
-        //     terminal_display_picture(current);
-        // }
+        if (&terminal_display_picture) {
+            terminal_display_picture(current);
+        }
     }
 
     // show the picture if possible
