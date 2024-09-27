@@ -5,6 +5,7 @@ The cJSON library is in the repository so you only need curl and an api key.
 If you are on mac you might need to use sudo before ./weather_cli <city name> 
 because if not the json file needed might not be created
 
+The WEATHERSTACK_API_KEY.env file goes into src/
 The format for the API Key file is   
 
 CORRECT FORMAT: YOUR_ACCESS_KEY  
