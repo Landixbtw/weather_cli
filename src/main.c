@@ -316,6 +316,7 @@ int main(int argc, char *argv[])
         if (&terminal_display_picture) {
             terminal_display_picture(current);
         }
+
     }
 
     // show the picture if possible
