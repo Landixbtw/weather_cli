@@ -12,4 +12,7 @@ CORRECT FORMAT: YOUR_ACCESS_KEY
 WRONG FORMAT: access_key=YOUR_ACCESS_KEY  
 
 You need curl -> https://curl.se/download.html  
-Weatherstack key -> https://weatherstack.com/signup/free
+Weatherstack key -> https://weatherstack.com/signup/free  
+
+This project uses mason build.   
+To build. --> https://mesonbuild.com/Quick-guide.html  
