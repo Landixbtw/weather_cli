@@ -49,8 +49,6 @@ size_t terminal_display_picture(const cJSON *current)
     for (int i = 0; supported_image_viewers[i] != NULL ;i++) {
         // run a test command for the supported image viewers, check the output if its good assign user_image_viewer
         char * tmp_image_viewer;
-        char *command;
-        int result = 0;
 
         // snprintf(command, sizeof(command), "%s", supported_image_viewers[i]);
         // result = system(command);
@@ -120,24 +118,24 @@ size_t terminal_display_picture(const cJSON *current)
             fprintf(stderr, "Couldn't open image.\n");
             return 1;
         } else {
-            FILE *command;
+            FILE *user_command;
             char path[1024];
 
             char *input;
             // timg wird dann ersetzt durch user_image_viewer
             // snprintf(input, sizeof(input), "%s %s", user_image_viewer, tmp_weather_png_filename);
-            command = popen("timg weather.png", "r");
+            user_command = popen("timg resources/weather.png", "r");
 
-            if (!command) {
+            if (!user_command) {
                 perror("Couldnt execute command");
                 return 1;
             }
 
-            while (fgets(path, sizeof(path), command) != NULL) {
+            while (fgets(path, sizeof(path), user_command) != NULL) {
                 fprintf(stdout, "%s", path);
             }
 
-            pclose(command);
+            pclose(user_command);
         }
     #endif 
 
