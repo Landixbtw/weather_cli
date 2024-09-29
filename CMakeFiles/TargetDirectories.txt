@@ -1,0 +1,3 @@
+/home/ole/Dokumente/cs50/Final_Project/weather_cli/CMakeFiles/weather_cli.dir
+/home/ole/Dokumente/cs50/Final_Project/weather_cli/CMakeFiles/edit_cache.dir
+/home/ole/Dokumente/cs50/Final_Project/weather_cli/CMakeFiles/rebuild_cache.dir

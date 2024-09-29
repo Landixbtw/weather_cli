@@ -1,22 +1,22 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
 #include <locale.h>
 
 #include <curl/curl.h>
 #include <curl/easy.h>
 
-#include "cJSON.h"
-#include "terminal_support.h"
-
+#include "../include/cJSON.h"
+#include "../include/terminal_support.h"
+#include "../include/image_to_ascii.h"
 
 #define MAX_URL_LENGTH 256
 #define PROGRAM_NAME "./weather_cli"
 
-const char *api_key_filename = "WEATHERSTACK_API_KEY.env";
-const char *json_filename = "json_data.json";
+
+const char *api_key_filename = "resources/WEATHERSTACK_API_KEY.env";
+const char *json_filename = "resources/json_data.json";
 
 /* 
  * To give the user the weather info he wants we need to get a city name.
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
         */
 
         // wb = write binary
-        temp_json_file = fopen("json_data.json", "wb+");
+        temp_json_file = fopen(json_filename, "wb+");
 
         if (temp_json_file) {
 
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
      */
 
 
-    temp_json_file = fopen("json_data.json", "rb"); 
+    temp_json_file = fopen(json_filename, "rb"); 
 
     if (temp_json_file == NULL) {
         fprintf(stderr, "Error: Couldn't open file: %s\n", json_filename);
@@ -291,7 +291,17 @@ int main(int argc, char *argv[])
         if (cJSON_IsArray(weather_descriptions)) {
             cJSON *weather_descriptions_array_item = cJSON_GetArrayItem(weather_descriptions, 0);
             if (cJSON_IsString(weather_descriptions_array_item) && (weather_descriptions_array_item->valuestring != NULL)) {
-                fprintf(stdout, "- Weather: %s.\n", weather_descriptions_array_item->valuestring);
+                fprintf(stdout, "- Weather: %s.           \n", weather_descriptions_array_item->valuestring);
+            }
+            unsigned long weather_length = strlen(weather_descriptions_array_item->valuestring) + strlen("- Weather: ");
+            if (&terminal_display_picture) {
+                /* This is the Ansi Code to move up on line */
+                printf("\033[1A"); 
+                /* This is the the Ansi Code to move the cursor %ld (weather_length + 2 ) to the right 
+                 * So we have calculated the length of both strings, and 2 characters as buffer 
+                */
+                printf("\033[%ldC", weather_length + 2);
+                terminal_display_picture(current);
             }
         }
 
@@ -312,11 +322,6 @@ int main(int argc, char *argv[])
         if (cJSON_IsNumber(feelslike)) {
             fprintf(stdout, "- Feels like: %i°C.\n", feelslike->valueint);
         }
-
-        if (&terminal_display_picture) {
-            terminal_display_picture(current);
-        }
-
     }
 
     // show the picture if possible
@@ -362,7 +367,8 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
     size_t written = fwrite(ptr, size, nmemb, (FILE *) stream);
 
     if (written != nmemb) {
-        fprintf(stderr, "fwrite() failed: %s\n", strerror(errno));
+        // fprintf(stderr, "fwrite() failed: %s\n", strerror(errno));
+        perror("fwrite() failed");
     }
     return written;
 }

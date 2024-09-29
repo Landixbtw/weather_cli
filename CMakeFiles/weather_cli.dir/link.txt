@@ -1,0 +1,1 @@
+/usr/bin/cc -O3 -DNDEBUG CMakeFiles/weather_cli.dir/src/main.c.o CMakeFiles/weather_cli.dir/src/terminal_support.c.o CMakeFiles/weather_cli.dir/src/image_to_ascii.c.o CMakeFiles/weather_cli.dir/src/cJSON.c.o -o weather_cli  /usr/lib/libcurl.so -lcaca
