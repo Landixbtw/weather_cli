@@ -15,8 +15,8 @@
 #define PROGRAM_NAME "./weather_cli"
 
 
-const char *api_key_filename = "resources/WEATHERSTACK_API_KEY.env";
-const char *json_filename = "resources/json_data.json";
+const char *api_key_filename = "src/resources/WEATHERSTACK_API_KEY.env";
+const char *json_filename = "src/resources/json_data.json";
 
 /* 
  * To give the user the weather info he wants we need to get a city name.
@@ -294,15 +294,14 @@ int main(int argc, char *argv[])
                 fprintf(stdout, "- Weather: %s.           \n", weather_descriptions_array_item->valuestring);
             }
             unsigned long weather_length = strlen(weather_descriptions_array_item->valuestring) + strlen("- Weather: ");
-            if (&terminal_display_picture) {
-                /* This is the Ansi Code to move up on line */
-                printf("\033[1A"); 
-                /* This is the the Ansi Code to move the cursor %ld (weather_length + 2 ) to the right 
-                 * So we have calculated the length of both strings, and 2 characters as buffer 
-                */
-                printf("\033[%ldC", weather_length + 2);
-                terminal_display_picture(current);
-            }
+
+            /* This is the Ansi Code to move up on line */
+            printf("\033[1A"); 
+            /* This is the the Ansi Code to move the cursor %ld (weather_length + 2 ) to the right 
+             * So we have calculated the length of both strings, and 2 characters as buffer 
+            */
+            printf("\033[%ldC", weather_length + 2);
+            terminal_display_picture(current);
         }
 
         wind_speed = cJSON_GetObjectItemCaseSensitive(current, "wind_speed");
