@@ -11,6 +11,7 @@
 #include "../include/terminal_support.h"
 #include "../include/image_to_ascii.h"
 
+
 #define MAX_URL_LENGTH 256
 #define PROGRAM_NAME "./weather_cli"
 
@@ -296,7 +297,7 @@ int main(int argc, char *argv[])
             unsigned long weather_length = strlen(weather_descriptions_array_item->valuestring) + strlen("- Weather: ");
 
             /* This is the Ansi Code to move up on line */
-            printf("\033[1A"); 
+            printf("\033[0A"); 
             /* This is the the Ansi Code to move the cursor %ld (weather_length + 2 ) to the right 
              * So we have calculated the length of both strings, and 2 characters as buffer 
             */
@@ -323,6 +324,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    image_to_ascii();
     // show the picture if possible
 
     fclose(read_api_key_file);
