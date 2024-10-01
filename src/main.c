@@ -10,7 +10,7 @@
 #include "../include/cJSON.h"
 #include "../include/terminal_support.h"
 #include "../include/image_to_ascii.h"
-
+#include "../include/terminal_display_picture.h"
 
 #define MAX_URL_LENGTH 256
 #define PROGRAM_NAME "./weather_cli"
@@ -283,6 +283,7 @@ int main(int argc, char *argv[])
             fprintf(stdout, "- Temperature: %i°C.\n", temperature->valueint);
         }
 
+
         weather_descriptions = cJSON_GetObjectItemCaseSensitive(current, "weather_descriptions");
 
         /* to print the part of the array, we first need to index, since there 
@@ -294,6 +295,10 @@ int main(int argc, char *argv[])
             if (cJSON_IsString(weather_descriptions_array_item) && (weather_descriptions_array_item->valuestring != NULL)) {
                 fprintf(stdout, "- Weather: %s.           \n", weather_descriptions_array_item->valuestring);
             }
+
+            // TODO: Figure out how to check if wind speed or weather is longer and 
+            // arrange the picture for the longer one so that there are no cuttofs or any other
+            // weird behavior
             unsigned long weather_length = strlen(weather_descriptions_array_item->valuestring) + strlen("- Weather:   ");
 
             /* This is the Ansi Code to move up on line */
@@ -312,6 +317,7 @@ int main(int argc, char *argv[])
             printf("\033[3A"); 
             fprintf(stdout, "- Wind speed: %i km/h.\n", wind_speed->valueint);
         }
+
 
         humidity = cJSON_GetObjectItemCaseSensitive(current, "humidity");
 

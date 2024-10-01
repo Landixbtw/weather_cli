@@ -8,8 +8,8 @@ inc_dir = include_directories('include')
 lib = library('cJSON', 'src/cJSON.c')
 
 # Define the source and destination paths
-src_resources = join_paths(meson.source_root(),  'src', 'resources')
-build_resources = join_paths(meson.build_root(), 'src', 'resources')
+src_resources = join_paths(meson.source_root(),  'src', 'resources', '')
+build_resources = join_paths(meson.build_root(), 'src', 'resources', '')
 
 # Create a custom target to copy the resources directory
 copy_resources = custom_target(
@@ -23,7 +23,7 @@ copy_resources = custom_target(
 )
 
 # Create the executable
-executable(meson.project_name(), ['src/main.c', 'src/terminal_support.c', 'src/cJSON.c', 'src/image_to_ascii.c'], 
+executable(meson.project_name(), ['src/main.c', 'src/terminal_support.c', 'src/cJSON.c', 'src/image_to_ascii.c', 'src/terminal_display_picture.c'], 
   dependencies: [caca_deps, curL_deps],
   include_directories: inc_dir,
   link_with: lib,
