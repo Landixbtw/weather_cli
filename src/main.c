@@ -294,10 +294,10 @@ int main(int argc, char *argv[])
             if (cJSON_IsString(weather_descriptions_array_item) && (weather_descriptions_array_item->valuestring != NULL)) {
                 fprintf(stdout, "- Weather: %s.           \n", weather_descriptions_array_item->valuestring);
             }
-            unsigned long weather_length = strlen(weather_descriptions_array_item->valuestring) + strlen("- Weather: ");
+            unsigned long weather_length = strlen(weather_descriptions_array_item->valuestring) + strlen("- Weather:   ");
 
             /* This is the Ansi Code to move up on line */
-            printf("\033[0A"); 
+            printf("\033[1A"); 
             /* This is the the Ansi Code to move the cursor %ld (weather_length + 2 ) to the right 
              * So we have calculated the length of both strings, and 2 characters as buffer 
             */
@@ -308,6 +308,8 @@ int main(int argc, char *argv[])
         wind_speed = cJSON_GetObjectItemCaseSensitive(current, "wind_speed");
 
         if (cJSON_IsNumber(wind_speed)) {
+
+            printf("\033[3A"); 
             fprintf(stdout, "- Wind speed: %i km/h.\n", wind_speed->valueint);
         }
 
