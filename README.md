@@ -29,3 +29,5 @@ cd builddir
 
 meson compile
 ```
+
+macos brew install pkgconfig libcaca
