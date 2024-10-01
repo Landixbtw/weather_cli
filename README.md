@@ -10,10 +10,6 @@ I kinda wanted to do something that seemed simple in e.g python, but would still
 ### Curl
 You need [curl](https://curl.se) you can either [download](https://curl.se/download.html) it from the official website, or the build system ([meson](https://mesonbuild.com/index.html)) will download it for you since libcurl has a [meson wrapDB package](https://mesonbuild.com/Wrapdb-projects.html).
 
-### Weatherstack API key
-Then you you need your Weatherstack api key, which you can get with a Weatherstack account.  
-You can sign up here: https://weatherstack.com/signup/free  
-
 ### Meson build system
 For meson you **need python**. You can find installation methods for meson [here](https://mesonbuild.com/Getting-meson.html).
 
@@ -37,9 +33,13 @@ Linux tux 6.10.10-arch1-1 #1 SMP PREEMPT_DYNAMIC Thu, 12 Sep 2024 17:21:02 +0000
 ---
 ```
 
-### The API Key
+### Weatherstack API Key
 
-Before using ```meson setup builddir``` you have to create the `"WEATHERSTACK_API_KEY.env"` 
+Last but not least you need your Weatherstack API key, which you can get with a Weatherstack account.  
+You can sign up here: https://weatherstack.com/signup/free  
+(With the free api you get 250 request per month, for 10$ a month you get 50,000.)  
+
+**Before** using ```meson setup builddir``` you have to create the `"WEATHERSTACK_API_KEY.env"` 
 file in `src/resources` (if the folder does not exist, create it) and paste your api Key.
 Also use the correct format. ↓
 
