@@ -2,7 +2,7 @@
 
 This is my 3rd attempt at a final project, and I think I found the balance this time, between having fun but it also not being too hard.
 my first attempt was trying to write a small operating system with c. But once I figured out that in freestanding I would have to implement libc myself, I put that project on hold.  
-I was / am pretty sure I would not have been able to make something working / something that I could present I about 7 Months. So I set my eye on making a small game with raylib and c. Sadly this burned when I was 70% finished since apprently playing games is just more fun then making them...
+I was / am pretty sure I would not have been able to make something working / something that I could present I about 7 Months. So I set my eye on making a small game with raylib and c. Sadly this burned when I was 70% finished since apprently playing games is just more fun then making them...  
 I kinda wanted to do something that seemed simple in e.g python, but would still be a challenge in c. And since curl is a library that you encounter often, for example when downloading something. I had the idea to make this weather cli.
 
 ## Dependencies
