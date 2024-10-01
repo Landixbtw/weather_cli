@@ -25,12 +25,11 @@ size_t terminal_display_picture(const cJSON *current)
     int result = 0;
     const cJSON *weather_icons_array_item = NULL;
     const cJSON *weather_icons_array = NULL;
-    char *command = malloc(sizeof(char *) * 124);
 
     // These are all the image viewers that are "supported"
     char *supported_image_viewers[] = { "timg" , "chafa" , NULL};
     // This is the image viewer that is both on the user system and installed
-    char *user_image_viewer;
+    char *user_image_viewer = "zero";
 
 
     // NOTE: Alactritty seems to show the image but at a really bad quality
@@ -116,7 +115,6 @@ size_t terminal_display_picture(const cJSON *current)
             FILE *user_command;
             char path[1024];
 
-            char *input;
             // timg wird dann ersetzt durch user_image_viewer
             // snprintf(input, sizeof(input), "%s %s", user_image_viewer, tmp_weather_png_filename);
             user_command = popen("timg src/resources/weather.png", "r");

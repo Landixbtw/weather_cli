@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // int int_key = fscanf(read_api_key_file, "%s", ACCESS_KEY);
+    int int_key = fscanf(read_api_key_file, "%s", ACCESS_KEY);
 
     if (!setlocale(LC_CTYPE, "de_DE.UTF-8")) {
         fprintf(stderr, "Can't set the specified locale!\n Check LANG, LC_CTYPE, LC_ALL.\n");
@@ -209,18 +209,19 @@ int main(int argc, char *argv[])
     const cJSON *api_error_code = NULL;
     const cJSON *api_error_info = NULL;
 
-    // const cJSON *request = NULL;
+    const cJSON *request = NULL;
     const cJSON *location = NULL;
     const cJSON *current = NULL;
 
     const cJSON *name = NULL;
-    // const cJSON *unit = NULL;
+    const cJSON *unit = NULL;
     const cJSON *observation_time = NULL;
     const cJSON *temperature = NULL;
     const cJSON *weather_descriptions = NULL;
     const cJSON *wind_speed = NULL;
     const cJSON *humidity = NULL;
     const cJSON *feelslike = NULL;
+    const cJSON *weather_icons = NULL;
 
     /* We can't access name directly since its nested, so we first need to 
      * parse everything and then parse location 
@@ -249,16 +250,14 @@ int main(int argc, char *argv[])
 
 
     // FIX: How can this be more compact ? more better ?
-
-    // request = cJSON_GetObjectItemCaseSensitive(json, "request");
-
-    // if (request != NULL) {
-        // unit = cJSON_GetObjectItemCaseSensitive(request, "unit");
+    request = cJSON_GetObjectItemCaseSensitive(json, "request");
+    if (request != NULL) {
+        unit = cJSON_GetObjectItemCaseSensitive(request, "unit");
 
         // if (cJSON_IsString(unit) && (unit->valuestring != NULL)) {
         //     fprintf(stdout, "unit:\"%s\"\n", unit->valuestring);
         // }
-    // }
+    }
 
     location = cJSON_GetObjectItemCaseSensitive(json, "location");
     if (location != NULL) {
@@ -306,7 +305,7 @@ int main(int argc, char *argv[])
             printf("%ld", weather_length);
             printf("%ld", wind_speed_string_length);
 
-            weather_length = strlen(weather_descriptions_array_item->valuestring) + strlen("weather:  ");
+            weather_length = strlen(weather_descriptions_array_item->valuestring) + strlen("weather: ");
 
             // TODO: Figure out how to check if wind speed or weather is longer and 
             // arrange the picture for the longer one so that there are no cuttofs or any other
@@ -416,7 +415,7 @@ enum umlaute {
 char *filter_char(const wchar_t input, size_t output_size) {
     // output size sizeof(wchar_t)
 
-    char *output = "zero";
+    char *output;
 
     size_t j = 0;
     // if input[i] UMLAUT A O U then replace else nothing
