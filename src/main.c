@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     // int int_key = fscanf(read_api_key_file, "%s", ACCESS_KEY);
 
     if (!setlocale(LC_CTYPE, "de_DE.UTF-8")) {
-        fprintf(stderr, "Can't set the specified locale!\n Check LANG, LC_CTYPE, LC_ALL.\n");
+        perror("Can't set the specified locale!\n Check LANG, LC_CTYPE, LC_ALL.\n");
         return 1;
     }
 

@@ -8,8 +8,11 @@ inc_dir = include_directories('include')
 lib = library('cJSON', 'src/cJSON.c')
 
 # Define the source and destination paths
-src_resources = join_paths(meson.source_root(),  'src', 'resources', '')
-build_resources = join_paths(meson.build_root(), 'src', 'resources', '')
+src_resources = join_paths(meson.source_root(),  'src', 'resources', )
+build_resources = join_paths(meson.build_root(), 'src', 'resources', )
+
+# BUG: There are two resource folders being created, builddir/src/resources builddir/src/resources/resources
+# BUG: Also the .env file is in both but the programm cant find it
 
 # Create a custom target to copy the resources directory
 copy_resources = custom_target(
