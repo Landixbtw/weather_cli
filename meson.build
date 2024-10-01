@@ -15,15 +15,18 @@ build_resources = join_paths(meson.build_root(), 'src', 'resources', )
 # BUG: Also the .env file is in both but the programm cant find it
 
 # Create a custom target to copy the resources directory
-copy_resources = custom_target(
+src_resources = join_paths(meson.source_root(), 'src', 'resources')
+build_resources = join_paths(meson.build_root(), 'src', 'resources')
+
+copy_resources = run_command('test', '-d', src_resources, check: false).returncode() == 0 ? custom_target(
   'copy-resources',
   command: [
-    'mkdir', '-p', join_paths(meson.build_root(), 'src'),  # Ensure builddir/src exists
-    '&&', 'cp', '-r', src_resources, build_resources  # Copy the resources folder
+    'sh', '-c', 
+    'mkdir -p "@0@" && if [ "$(ls -A @1@)" ]; then cp -r "@1@"/* "@0@"; fi'.format(build_resources, src_resources)
   ],
-  output: ['resources_folder'],  # Virtual name for the output
-  build_by_default: true  # Ensure this runs during the build
-)
+  output: ['resources_folder'],
+  build_by_default: true
+) : []
 
 # Create the executable
 executable(meson.project_name(), ['src/main.c', 'src/terminal_support.c', 'src/cJSON.c', 'src/image_to_ascii.c', 'src/terminal_display_picture.c'], 
