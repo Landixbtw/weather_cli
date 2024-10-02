@@ -310,22 +310,23 @@ int main(int argc, char *argv[])
             printf("%ld", weather_length);
             printf("%ld", wind_speed_string_length);
 
-            weather_length = strlen(weather_descriptions_array_item->valuestring) + strlen("weather:  ");
-
+            // weather_length = strlen(weather_descriptions_array_item->valuestring) + strlen("weather:                     ");
+            weather_length = strlen(observation_time->valuestring) + strlen("Observation Time:");
             // TODO: Figure out how to check if wind speed or weather is longer and 
             // arrange the picture for the longer one so that there are no cuttofs or any other
             // weird behavior
 
             /* This is the Ansi Code to move up on line */
-            printf("\033[1A"); 
+            printf("\033[2A"); 
             /* This is the the Ansi Code to move the cursor %ld (weather_length + 2 ) to the right 
              * So we have calculated the length of both strings, and 2 characters as buffer 
             */
-            printf("\033[%ldC", weather_length + 2);
+            printf("\033[%ldC", weather_length);
             terminal_display_picture(current);
         }
 
         if (cJSON_IsNumber(wind_speed)) {
+            // convert to string
             printf("\033[3A"); 
             fprintf(stdout, "- Wind speed: %i km/h.\n", wind_speed->valueint);
         }
