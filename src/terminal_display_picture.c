@@ -65,7 +65,6 @@ size_t terminal_display_picture(const cJSON *current)
 
     // TODO:  https://stackoverflow.com/questions/646241/c-run-a-system-command-and-get-output
 
-    char *terminal_emulator_name_OS_LINUX = get_terminal_emulator_name();
     char *tmp_weather_png_filename = "src/resources/weather.png";
 
     #if __linux__
@@ -117,7 +116,7 @@ size_t terminal_display_picture(const cJSON *current)
 
             // timg wird dann ersetzt durch user_image_viewer
             // snprintf(input, sizeof(input), "%s %s", user_image_viewer, tmp_weather_png_filename);
-            user_command = popen("timg src/resources/weather.png", "r");
+            user_command = popen("viu src/resources/weather.png --width 8 --height 4", "r");
 
             if (!user_command) {
                 perror("Couldnt execute command");

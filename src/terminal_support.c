@@ -6,70 +6,47 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 
-/* This is 50/50 me and claude.ai */
-char *get_terminal_emulator_name(void)
+size_t get_terminal_emulator_name(void)
 {
     /*
-    * We can start by getting the parent process ID of our program.
-    * Then, we can read the command line of that parent process from the /proc filesystem.
-    * The command line often (but not always) includes the name of the terminal emulator.
+     * There are different "protocols", or "escape sequences", that can help 
+     * determine if a termianl supports displaying pictures. So instead of 
+     * trying to get the terminal emulator name,
+     * and testing x amount of terminals, we can just get the protocol, and 
+     * determine if the terminal emulator can display a picture.
     */
 
-    char *terminal_name;
-    // *p*arent *p*rocess *id*
-    pid_t ppid = getppid();
-
-    // TODO: This gives the shell not the terminal emulator name 
-
+    char *terminal_emulator_protocol_kitty = getenv("TERM");
+    char *terminal_emulator_protocol_sixel = getenv("TERM");
     #ifdef __linux__
-        char proc_path[256];
-
-        snprintf(proc_path, sizeof(proc_path), "/proc/%d/cmdline", ppid);
-        // printf("proc_path: %s\n", proc_path);
-
-
-        FILE *f = fopen(proc_path, "r");
-        if (f == NULL) {
-            perror("Failed to open proc file\n");
-            return NULL;
+        if (terminal_emulator_protocol_kitty && strcmp(terminal_emulator_protocol_kitty, "xterm-kitty") == 0) {
+            fprintf(stdout, "Should be able to display pictures\n");
         }
 
+        /*
+         * FIX: In kitty there is xterm, like in wezterm so altough they are not xterm but xterm-xxx they still get return 1 cant display pictures
+        */
 
-        char *line = NULL;
-        size_t len = 0;
-        ssize_t read = getline(&line, &len, f);
-        fclose(f);
-
-        if (read == -1) {
-            free(line);
-            return NULL;
-        }
-
-        // Extract the terminal emulator name from the command line
-        // This part will depend on the specific format of your system
-        terminal_name = strrchr(line, '/');
-        if (terminal_name) {
-            terminal_name++; // Move past the '/'
-        } else {
-            terminal_name = line;
-        }
-
-        // Remove any arguments
-        char *space = strchr(terminal_name, ' ');
-        if (space) *space = '\0';
-
-        // printf("terminal name: %s\n", terminal_name);
-
+        // if ((terminal_emulator_protocol_sixel && (strcmp(terminal_emulator_protocol_sixel, "mlterm"))) 
+        //     || (terminal_emulator_protocol_sixel && (strcmp(terminal_emulator_protocol_sixel, "xterm")))) {
+        //     fprintf(stderr, "Cannot display pictures\n");
+        //     return 1;
+        // }
     #endif 
 
 
     #ifdef __APPLE__ 
+        char * terminal_emulator_protocol_iterm = getenv("TERM_PROGRAMM");
+        if (terminal_emulator_protocol_iterm && strcmp(terminal_emulator_protocol_iterm, "iTerm.app") == 0) {
+            fprintf(stdout, "Should be able to display pictures\n");
+        }
 
-        fprintf(stdout, "PPID: %i\n", ppid);
-        printf("PID APPLE: %i\n", getpid());
+        if (terminal_emulator_protocol_kitty && strcmp(terminal_emulator_protocol_kitty, "xterm-kitty") == 0) {
+            fprintf(stdout, "Should be able to display pictures\n");
+        }
 
     #endif
 
-    return terminal_name;
+    return 0;
 }
 
