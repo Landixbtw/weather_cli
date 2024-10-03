@@ -252,7 +252,6 @@ int main(int argc, char *argv[])
 
 
     // FIX: How can this be more compact ? more better ?
-
     // request = cJSON_GetObjectItemCaseSensitive(json, "request");
 
     // if (request != NULL) {
@@ -265,8 +264,12 @@ int main(int argc, char *argv[])
 
     fprintf(stdout, "Weather report for ");
 
+    size_t image_to_ascii_result = image_to_ascii();
+
     if (get_terminal_emulator_name() != 0) {
-        image_to_ascii();
+        if (image_to_ascii_result == 0) {
+            image_to_ascii();
+        }
     } else {
         terminal_display_picture(current);
     }
@@ -276,6 +279,7 @@ int main(int argc, char *argv[])
         name = cJSON_GetObjectItemCaseSensitive(location, "name");
 
         if (cJSON_IsString(name) && (name->valuestring != NULL )) {
+            printf("\033[2A");
             fprintf(stdout, "\n\033[4m%s\033[0m\n", name->valuestring);
         }
     }
@@ -328,9 +332,6 @@ int main(int argc, char *argv[])
             fprintf(stdout, "\033[4mFeels like\033[0m: %i°C.\n", feelslike->valueint);
         }
     }
-
-    image_to_ascii();
-    // show the picture if possible
 
     fclose(read_api_key_file);
     fclose(temp_json_file);

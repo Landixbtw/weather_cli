@@ -1,4 +1,4 @@
-project('weather_cli', 'c')
+project('main', 'c')
 
 caca_deps = [dependency('caca')]
 curL_deps = [dependency('libcurl')]

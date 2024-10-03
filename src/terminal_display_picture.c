@@ -116,7 +116,7 @@ size_t terminal_display_picture(const cJSON *current)
 
             // timg wird dann ersetzt durch user_image_viewer
             // snprintf(input, sizeof(input), "%s %s", user_image_viewer, tmp_weather_png_filename);
-            user_command = popen("viu src/resources/weather.png --width 8 --height 4", "r");
+            user_command = popen("timg src/resources/weather.png", "r");
 
             if (!user_command) {
                 perror("Couldnt execute command");
