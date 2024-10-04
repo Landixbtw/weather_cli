@@ -16,22 +16,27 @@ size_t get_terminal_emulator_name(void)
      * determine if the terminal emulator can display a picture.
     */
 
-    char *terminal_emulator_protocol_kitty = getenv("TERM");
-    char *terminal_emulator_protocol_sixel = getenv("TERM");
+
+    // make this switch case ?
+    char *terminal_emulator_protocol = getenv("TERM");
+
     #ifdef __linux__
-        if (terminal_emulator_protocol_kitty && strcmp(terminal_emulator_protocol_kitty, "xterm-kitty") == 0) {
+        if (terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "xterm-kitty") == 0) {
             fprintf(stdout, "Should be able to display pictures\n");
+        }
+
+        if (terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "xterm-256-colors") == 0) {
+            printf("Should display pictures \n");
         }
 
         /*
          * FIX: In kitty there is xterm, like in wezterm so altough they are not xterm but xterm-xxx they still get return 1 cant display pictures
         */
 
-        // if ((terminal_emulator_protocol_sixel && (strcmp(terminal_emulator_protocol_sixel, "mlterm"))) 
-        //     || (terminal_emulator_protocol_sixel && (strcmp(terminal_emulator_protocol_sixel, "xterm")))) {
-        //     fprintf(stderr, "Cannot display pictures\n");
-        //     return 1;
-        // }
+        if ((terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "mlterm") == 0) 
+            || (terminal_emulator_protocol && (strcmp(terminal_emulator_protocol, "xterm"))) == 0) {
+            return 1;
+        }
     #endif 
 
 
@@ -41,7 +46,7 @@ size_t get_terminal_emulator_name(void)
             fprintf(stdout, "Should be able to display pictures\n");
         }
 
-        if (terminal_emulator_protocol_kitty && strcmp(terminal_emulator_protocol_kitty, "xterm-kitty") == 0) {
+        if (terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "xterm-kitty") == 0) {
             fprintf(stdout, "Should be able to display pictures\n");
         }
 

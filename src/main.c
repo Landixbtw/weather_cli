@@ -264,15 +264,16 @@ int main(int argc, char *argv[])
 
     fprintf(stdout, "Weather report for ");
 
-    size_t image_to_ascii_result = image_to_ascii();
+    // size_t image_to_ascii_result = image_to_ascii();
 
-    if (get_terminal_emulator_name() != 0) {
-        if (image_to_ascii_result == 0) {
-            image_to_ascii();
-        }
-    } else {
+    get_terminal_emulator_name();
+    // if (get_terminal_emulator_name() != 0) {
+        // if (image_to_ascii_result == 0) {
+            // image_to_ascii();
+        // }
+    // } else {
         terminal_display_picture(current);
-    }
+    // }
 
     location = cJSON_GetObjectItemCaseSensitive(json, "location");
     if (location != NULL) {
