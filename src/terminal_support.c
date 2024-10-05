@@ -6,6 +6,7 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 
+
 size_t get_terminal_emulator_name(void)
 {
     /*
@@ -16,25 +17,18 @@ size_t get_terminal_emulator_name(void)
      * determine if the terminal emulator can display a picture.
     */
 
-
-    // make this switch case ?
+  
+    // more protocols 
     char *terminal_emulator_protocol = getenv("TERM");
 
     #ifdef __linux__
-        if (terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "xterm-kitty") == 0) {
-            fprintf(stdout, "Should be able to display pictures\n");
+        if (terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "xterm-256color") == 0) {
+            return 0;
         }
-
-        if (terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "xterm-256-colors") == 0) {
-            printf("Should display pictures \n");
-        }
-
-        /*
-         * FIX: In kitty there is xterm, like in wezterm so altough they are not xterm but xterm-xxx they still get return 1 cant display pictures
-        */
 
         if ((terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "mlterm") == 0) 
             || (terminal_emulator_protocol && (strcmp(terminal_emulator_protocol, "xterm"))) == 0) {
+            // fprintf(stdout, "\nYour terminal emulator protocol cannot display pictures!\n");
             return 1;
         }
     #endif 
@@ -43,15 +37,19 @@ size_t get_terminal_emulator_name(void)
     #ifdef __APPLE__ 
         char * terminal_emulator_protocol_iterm = getenv("TERM_PROGRAMM");
         if (terminal_emulator_protocol_iterm && strcmp(terminal_emulator_protocol_iterm, "iTerm.app") == 0) {
-            fprintf(stdout, "Should be able to display pictures\n");
+            return 0;
         }
 
         if (terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "xterm-kitty") == 0) {
-            fprintf(stdout, "Should be able to display pictures\n");
+	        return 0;
         }
 
     #endif
 
-    return 0;
+    if (terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "xterm-kitty") == 0) {
+        return 0;
+    }
+
+    return 1;
 }
 

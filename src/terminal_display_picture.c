@@ -5,7 +5,7 @@
 
 #include "../include/cJSON.h"
 #include "../include/terminal_support.h"
-
+#include "../include/image_to_ascii.h"
 
 
 /* This function will check if you have the terminal image viewers installed, 
@@ -65,8 +65,10 @@ size_t terminal_display_picture(const cJSON *current)
 
     // TODO:  https://stackoverflow.com/questions/646241/c-run-a-system-command-and-get-output
 
-    char *tmp_weather_png_filename = "src/resources/weather.png";
+    const char *tmp_weather_png_filename = "src/resources/weather.png";
+    const char *ascii_image_filepath = "src/resources/ascii.png";
 
+    
     #if __linux__
         if(current != NULL) {
             weather_icons_array = cJSON_GetObjectItemCaseSensitive(current, "weather_icons");
@@ -111,17 +113,19 @@ size_t terminal_display_picture(const cJSON *current)
             fprintf(stderr, "Couldn't open image.\n");
             return 1;
         } else {
+
+            if (get_terminal_emulator_name() == 0) {
+                image_to_ascii();
+            }
+
             FILE *user_command;
             char path[1024];
 
             // timg wird dann ersetzt durch user_image_viewer
             // snprintf(input, sizeof(input), "%s %s", user_image_viewer, tmp_weather_png_filename);
-            user_command = popen("timg src/resources/weather.png", "r");
+            // user_command = popen(input);
 
-            if (!user_command) {
-                perror("Couldnt execute command");
-                return 1;
-            }
+            user_command = popen("timg src/resources/weather.png", "r");
 
             while (fgets(path, sizeof(path), user_command) != NULL) {
                 fprintf(stdout, "%s", path);

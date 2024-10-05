@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <caca.h>
+// #include <caca.h>
 #include <curl/curl.h>
 #include <errno.h>
 #include <string.h>
@@ -11,7 +11,7 @@
 
 
 const char *weather_png_filepath = "src/resources/weather.png";
-const char *source_filename = "image_to_ascii.c";
+const char *ascii_png_filepath = "src/resources/ascii.png";
 
 size_t image_to_ascii(void)
 {
@@ -24,23 +24,25 @@ size_t image_to_ascii(void)
      * return 0 if success return 1 if not
     */ 
 
-    FILE *weather_png = fopen(weather_png_filepath, "rb");
+    if (get_terminal_emulator_name() != 0) {
+        FILE *weather_png = fopen(weather_png_filepath, "rb");
+        char path[1024];
+        char *input = malloc(sizeof(path) * 2);
+        FILE *img2ascii_command;
 
-    if (weather_png == NULL) {
-      fprintf(stderr, "Couldn't open weather.png in %s: ERROR: %s", source_filename, strerror(errno));
-      return 1;
+        if (weather_png == NULL) {
+          fprintf(stderr, "Couldn't open weather.png ERROR: %s",  strerror(errno));
+          exit(EXIT_FAILURE);
+        }
+
+        snprintf(input, sizeof(input), "./img2ascii/img2ascii --debug --print --input %s --output %s", weather_png_filepath, ascii_png_filepath);
+        img2ascii_command = popen(input, "r");
+
+        while (fgets(path, sizeof(path), img2ascii_command) != NULL) {
+            fprintf(stdout, "%s", path);
+        }
+        free(input);
+        return 0;
     }
-
-    // this creates a new windows, but we want to draw in the terminal
-    caca_canvas_t *cv; caca_display_t *dp; caca_event_t ev;
-    dp = caca_create_display(NULL);
-    if(!dp) return 1;
-    cv = caca_get_canvas(dp);
-    caca_set_display_title(dp, "Hello!");
-    caca_set_color_ansi(cv, CACA_BLACK, CACA_WHITE);
-    caca_put_str(cv, 0, 0, "This is a message");
-    caca_refresh_display(dp);
-    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
-    caca_free_display(dp);
-    return 0;
+    return 1;
 }
