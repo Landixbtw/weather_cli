@@ -10,15 +10,15 @@
 size_t get_terminal_emulator_name(void)
 {
     /*
-     * There are different "protocols", or "escape sequences", that can help 
-     * determine if a termianl supports displaying pictures. So instead of 
+     * There are different "protocols", or "escape sequences", that can help
+     * determine if a termianl supports displaying pictures. So instead of
      * trying to get the terminal emulator name,
-     * and testing x amount of terminals, we can just get the protocol, and 
+     * and testing x amount of terminals, we can just get the protocol, and
      * determine if the terminal emulator can display a picture.
     */
 
-  
-    // more protocols 
+
+    // more protocols
     char *terminal_emulator_protocol = getenv("TERM");
 
     #ifdef __linux__
@@ -26,15 +26,15 @@ size_t get_terminal_emulator_name(void)
             return 0;
         }
 
-        if ((terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "mlterm") == 0) 
+        if ((terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "mlterm") == 0)
             || (terminal_emulator_protocol && (strcmp(terminal_emulator_protocol, "xterm"))) == 0) {
             // fprintf(stdout, "\nYour terminal emulator protocol cannot display pictures!\n");
             return 1;
         }
-    #endif 
+    #endif
 
 
-    #ifdef __APPLE__ 
+    #ifdef __APPLE__
         char * terminal_emulator_protocol_iterm = getenv("TERM_PROGRAMM");
         if (terminal_emulator_protocol_iterm && strcmp(terminal_emulator_protocol_iterm, "iTerm.app") == 0) {
             return 0;
@@ -52,4 +52,3 @@ size_t get_terminal_emulator_name(void)
 
     return 1;
 }
-

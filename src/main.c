@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -262,12 +261,15 @@ int main(int argc, char *argv[])
         // }
     // }
 
-    fprintf(stdout, "Weather report for ");
+    // fprintf(stdout, "\033[4mWeather report for:\033[0m ");
 
     if (image_to_ascii() == 0) {
-        image_to_ascii();
+	printf("\n\033[2B");
+	image_to_ascii();
     } else {
-        terminal_display_picture(current);
+	printf("\n\033[1B");
+	printf("         ");
+	terminal_display_picture(current);
     }
 
     location = cJSON_GetObjectItemCaseSensitive(json, "location");
@@ -275,8 +277,9 @@ int main(int argc, char *argv[])
         name = cJSON_GetObjectItemCaseSensitive(location, "name");
 
         if (cJSON_IsString(name) && (name->valuestring != NULL )) {
-            printf("\033[2A");
-            fprintf(stdout, "\n\033[4m%s\033[0m\n", name->valuestring);
+            //printf("\n\033[2A");
+fprintf(stdout, "\033[4mWeather report for:\033[0m ");
+	    fprintf(stdout, "%s\n", name->valuestring);
         }
     }
 
@@ -285,14 +288,14 @@ int main(int argc, char *argv[])
         observation_time = cJSON_GetObjectItemCaseSensitive(current, "observation_time");
 
         if (cJSON_IsString(observation_time) && (observation_time->valuestring != NULL)) {
-            fprintf(stdout, "\033[4mObservation Time:\033[0m %s.\n", observation_time->valuestring);
+            fprintf(stdout, "\n\033[4mObservation Time:\033[0m %s.\n", observation_time->valuestring);
         }
 
         temperature = cJSON_GetObjectItemCaseSensitive(current, "temperature");
 
         /* since temperature is a number we have to check for a number */
         if (cJSON_IsNumber(temperature)) {
-            fprintf(stdout, "\033[4mTemperature\033[0m: %i°C.\n", temperature->valueint);
+            fprintf(stdout, "\n\033[4mTemperature\033[0m: %i°C.\n", temperature->valueint);
         }
 
 
@@ -307,25 +310,25 @@ int main(int argc, char *argv[])
         if (cJSON_IsArray(weather_descriptions)) {
             cJSON *weather_descriptions_array_item = cJSON_GetArrayItem(weather_descriptions, 0);
             if (cJSON_IsString(weather_descriptions_array_item) && (weather_descriptions_array_item->valuestring != NULL)) {
-                fprintf(stdout, "\033[4mWeather\033[0m: %s. \n", weather_descriptions_array_item->valuestring);
+                fprintf(stdout, "\n\033[4mWeather\033[0m: %s. \n", weather_descriptions_array_item->valuestring);
             }
         }
 
         if (cJSON_IsNumber(wind_speed)) {
-            fprintf(stdout, "\033[4mWind speed\033[0m: %i km/h.\n", wind_speed->valueint);
+            fprintf(stdout, "\n\033[4mWind speed\033[0m: %i km/h.\n", wind_speed->valueint);
         }
 
 
         humidity = cJSON_GetObjectItemCaseSensitive(current, "humidity");
 
         if (cJSON_IsNumber(humidity)) {
-            fprintf(stdout, "\033[4mHumidity:\033[0m %i%%.\n", humidity->valueint);
+            fprintf(stdout, "\n\033[4mHumidity:\033[0m %i%%.\n", humidity->valueint);
         }
 
         feelslike = cJSON_GetObjectItemCaseSensitive(current, "feelslike");
 
         if (cJSON_IsNumber(feelslike)) {
-            fprintf(stdout, "\033[4mFeels like\033[0m: %i°C.\n", feelslike->valueint);
+            fprintf(stdout, "\n\033[4mFeels like\033[0m: %i°C.\n", feelslike->valueint);
         }
     }
 
