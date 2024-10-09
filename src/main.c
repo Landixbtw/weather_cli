@@ -261,16 +261,26 @@ int main(int argc, char *argv[])
         // }
     // }
 
-    // fprintf(stdout, "\033[4mWeather report for:\033[0m ");
-
-    if (image_to_ascii() == 0) {
-	printf("\n\033[2B");
-	image_to_ascii();
-    } else {
-	printf("\n\033[1B");
+    if (terminal_display_picture(current) == 0) {
+        printf("\n\033[1B");
 	printf("         ");
-	terminal_display_picture(current);
+	FILE *user_command;
+	char path[1024];
+
+            // timg wird dann ersetzt durch user_image_viewer
+            // snprintf(input, sizeof(input), "%s %s", user_image_viewer, tmp_weather_png_filename);
+            // user_command = popen(input);
+
+	user_command = popen("timg src/resources/weather.png", "r");
+
+	while (fgets(path, sizeof(path), user_command) != NULL) {
+	    fprintf(stdout, "%s", path);
+	}
+	pclose(user_command);	
+    } else {
+	image_to_ascii();
     }
+	
 
     location = cJSON_GetObjectItemCaseSensitive(json, "location");
     if (location != NULL) {
@@ -278,7 +288,7 @@ int main(int argc, char *argv[])
 
         if (cJSON_IsString(name) && (name->valuestring != NULL )) {
             //printf("\n\033[2A");
-fprintf(stdout, "\033[4mWeather report for:\033[0m ");
+	    fprintf(stdout, "\033[4mWeather report for:\033[0m ");
 	    fprintf(stdout, "%s\n", name->valuestring);
         }
     }

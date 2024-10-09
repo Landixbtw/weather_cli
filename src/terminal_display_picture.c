@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <caca.h>
 #include <curl/curl.h>
+#include <curl/easy.h>
+#include <errno.h>
+#include <string.h>
 
 #include "../include/cJSON.h"
 #include "../include/terminal_support.h"
@@ -58,7 +61,7 @@ size_t terminal_display_picture(const cJSON *current)
 
 
     // smth like this: https://askubuntu.com/questions/210182/how-to-check-which-terminal-emulator-is-being-currently-used
-    int result_terminal_emulator;
+    // int result_terminal_emulator;
 
     // der output von get_terminal_emulator_OS_MAC muss gegen den array von unterstützen terminals überprüft werden. 
     // und dann muss man noch schauen welche image_vewer der user hat und dann das beide in den command gepumpt werden
@@ -66,7 +69,7 @@ size_t terminal_display_picture(const cJSON *current)
     // TODO:  https://stackoverflow.com/questions/646241/c-run-a-system-command-and-get-output
 
     const char *tmp_weather_png_filename = "src/resources/weather.png";
-    const char *ascii_image_filepath = "src/resources/ascii.png";
+    // const char *ascii_image_filepath = "src/resources/ascii.png";
 
     
     #if __linux__
@@ -83,12 +86,12 @@ size_t terminal_display_picture(const cJSON *current)
 
                     FILE *fp;
 
-
                     if (weather_icon_image) {
                         fp = fopen(tmp_weather_png_filename, "wb");
-                        if (fp == NULL) {
-                            perror("Error opening src/resources/weather.png.\n");
+                        if (fp == NULL) { 
+                            fprintf(stderr, "Error opening %s : %s", tmp_weather_png_filename, strerror(errno));
                         }
+
 
                         curl_easy_setopt(weather_icon_image, CURLOPT_URL, weather_icons_array_item->valuestring);
                         curl_easy_setopt(weather_icon_image, CURLOPT_WRITEFUNCTION, NULL);
@@ -109,30 +112,13 @@ size_t terminal_display_picture(const cJSON *current)
             }
         }
 
-        if (result == -1) {
+	result = system("timg /src/resources/weather.png");
+        if (result != 0) {
             fprintf(stderr, "Couldn't open image.\n");
             return 1;
-        } else {
-
-            if (get_terminal_emulator_name() == 0) {
-                image_to_ascii();
-            }
-
-            FILE *user_command;
-            char path[1024];
-
-            // timg wird dann ersetzt durch user_image_viewer
-            // snprintf(input, sizeof(input), "%s %s", user_image_viewer, tmp_weather_png_filename);
-            // user_command = popen(input);
-
-            user_command = popen("timg src/resources/weather.png", "r");
-
-            while (fgets(path, sizeof(path), user_command) != NULL) {
-                fprintf(stdout, "%s", path);
-            }
-
-            pclose(user_command);
         }
+
+     
     #endif 
 
     #ifdef __APPLE__

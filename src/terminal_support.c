@@ -3,11 +3,8 @@
 #include <unistd.h>
 #include <string.h>
 
-#include <curl/curl.h>
-#include <curl/easy.h>
 
-
-size_t get_terminal_emulator_name(void)
+size_t get_terminal_emulator_protocol(void)
 {
     /*
      * There are different "protocols", or "escape sequences", that can help
@@ -35,13 +32,9 @@ size_t get_terminal_emulator_name(void)
 
 
     #ifdef __APPLE__
-        char * terminal_emulator_protocol_iterm = getenv("TERM_PROGRAMM");
-        if (terminal_emulator_protocol_iterm && strcmp(terminal_emulator_protocol_iterm, "iTerm.app") == 0) {
+        char * terminal_emulator_protocol_macOS = getenv("TERM_PROGRAMM");
+        if (terminal_emulator_protocol_macOS && strcmp(terminal_emulator_protocol_macOS, "iTerm.app") == 0) {
             return 0;
-        }
-
-        if (terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "xterm-kitty") == 0) {
-	        return 0;
         }
 
     #endif

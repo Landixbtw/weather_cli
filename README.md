@@ -81,3 +81,11 @@ The cJSON library is in the repository so you only need curl and an api key.
 
 
 blah blah, api request, string manipulation, terminal and image viewer detection
+
+
+
+TODO:
+
+- The image is not being downloaded
+  - Why not ? 
+- Make two functions 1. For Downloading the image, 1. For displaying it.
