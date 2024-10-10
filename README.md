@@ -89,3 +89,4 @@ TODO:
 - The image is not being downloaded
   - Why not ? 
 - Make two functions 1. For Downloading the image, 1. For displaying it.
+- image to ascii

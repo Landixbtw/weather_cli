@@ -261,26 +261,8 @@ int main(int argc, char *argv[])
         // }
     // }
 
-    if (terminal_display_picture(current) == 0) {
-        printf("\n\033[1B");
-	printf("         ");
-	FILE *user_command;
-	char path[1024];
 
-            // timg wird dann ersetzt durch user_image_viewer
-            // snprintf(input, sizeof(input), "%s %s", user_image_viewer, tmp_weather_png_filename);
-            // user_command = popen(input);
 
-	user_command = popen("timg src/resources/weather.png", "r");
-
-	while (fgets(path, sizeof(path), user_command) != NULL) {
-	    fprintf(stdout, "%s", path);
-	}
-	pclose(user_command);	
-    } else {
-	image_to_ascii();
-    }
-	
 
     location = cJSON_GetObjectItemCaseSensitive(json, "location");
     if (location != NULL) {
