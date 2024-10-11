@@ -1,6 +1,7 @@
+# You can change the name of the cli by replacing 'main' with 'your desired name'
 project('main', 'c')
 
-caca_deps = [dependency('caca')]
+# caca_deps = [dependency('caca')]
 curL_deps = [dependency('libcurl')]
 
 inc_dir = include_directories('include')
@@ -50,10 +51,11 @@ copy_resources = run_command('test', '-d', src_resources, check: false).returnco
 executable(
   meson.project_name(), 
   ['src/main.c', 'src/terminal_support.c', 'src/cJSON.c', 'src/image_to_ascii.c', 'src/terminal_display_picture.c'],
-  dependencies: [caca_deps, curL_deps],
+  dependencies: [curL_deps],
   include_directories: inc_dir,
   link_with: lib,
   build_by_default: true,
   # install: true
+  # install_dir: 'your/destination/path'
 )
 

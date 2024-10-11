@@ -62,11 +62,37 @@ meson compile
 ```
 
 ### Installing the cli
-If you want to install the cli to your machine to be able to use it everywhere and not just in the directory.
+If you want to install the cli to your machine to be able to use it everywhere 
+and not just in the build directory. You can also set a custom path to install the programm. 
+If you so, I will not be able help you troubleshoot.
 You can uncomment the following line in the meson.build file.
 
 ```build
-meson.build install line
+
+executable(
+  meson.project_name(), 
+  ['src/main.c', 'src/terminal_support.c', 'src/cJSON.c', 'src/image_to_ascii.c', 'src/terminal_display_picture.c'],
+  dependencies: [curL_deps],
+  include_directories: inc_dir,
+  link_with: lib,
+  build_by_default: true,
+ -->  # install: true <--
+ --> # install_dir: 'your/destination/path' <--
+)
+```
+
+This will install the cli to the default path. You can also set a custom path.
+If you want to read more about meson install you can read here [here](https://mesonbuild.com/Installing.html).
+
+###  Using the weather cli
+
+After building / installing the programm, you can just execute ./weather_cli 
+with no options to get a usage screen. That looks something like this.
+
+``` 
+➜  builddir git:(main) ./weather_cli
+Usage: ./weather_cli <city>
+Example: ./weather_cli New+York
 ```
 
 > [!Important]
@@ -75,15 +101,6 @@ meson.build install line
 > It might not let you compile, and when running without sudo the .json 
 > and .png files might not be created.
 
-
-###  Using the weather cli
-
-After building / installing the programm, you can just execute ./weather_cli 
-with no options to get a usage screen. That looks something like this.
-
-``` 
-
-```
 
 ### How it works
 
