@@ -29,6 +29,7 @@ size_t terminal_display_picture(const cJSON *current)
      *  chafa
     */
 
+    char command[1024];
     int result = 0;
     const cJSON *weather_icons_array_item = NULL;
     const cJSON *weather_icons_array = NULL;
@@ -51,15 +52,18 @@ size_t terminal_display_picture(const cJSON *current)
         // run a test command for the supported image viewers, check the output if its good assign user_image_viewer
         char * tmp_image_viewer;
 
-        // snprintf(command, sizeof(command), "%s", supported_image_viewers[i]);
-        // result = system(command);
+        snprintf(command, sizeof(command), "%s > /dev/null", supported_image_viewers[0]);
+        result = system(command);
 
-        tmp_image_viewer = supported_image_viewers[0];
+	/* Search for the program in the PATH  kinda like which $s , supported_image_viewers[i] */
+	// https://stackoverflow.com/questions/41230547/check-if-program-is-installed-in-c
+        
         if (result != 0) {
             perror("supported_image_viewers command returned something wrong/bad idk.\n");
             break;
         }
-
+	
+	tmp_image_viewer = supported_image_viewers[0];
         user_image_viewer = tmp_image_viewer ;
     }
 
