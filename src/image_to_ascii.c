@@ -6,7 +6,6 @@
 #include <string.h>
 
 
-#include "../include/cJSON.h"
 #include "../include/terminal_support.h"
 
 
@@ -45,7 +44,7 @@ size_t image_to_ascii(void)
             fprintf(stderr, "Cannot open the img2ascii cli tool\n");
         }
 
-        snprintf(input, sizeof(input), "./img2ascii/img2ascii --debug --print --input %s --output %s", weather_png_filepath, ascii_png_filepath);
+        snprintf(input, sizeof(input), "./img2ascii/img2ascii --print --input %s", weather_png_filepath);
         img2ascii_command = popen(input , "r");
 
         while (fgets(path, sizeof(path), img2ascii_command) != NULL) {
