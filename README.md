@@ -151,9 +151,9 @@ Different terminal emulators, use different protocols, for example:
 
 Some are able to display pictures, and some are not, so in the ```terminal_support.c``` file, 
 we are checking which protocol your terminal emulator is using.  
-This way we can display different things depending on the outcome, on some terminals you will see a small picture with what the weather currently looks like.  
-And for some you will just get a small text telling you that your terminal emulator cannot display pictures, or you may get ascii art.  
-If you want a terminal that can display pictures, you should choose one with the following protocols: xterm-256color, xterm-kitty or iTerm.app.
+This way we can display different things depending on the outcome, on some terminals you will see a small picture with what the weather currently looks like.
+And for some you will just get a small text telling you that your terminal emulator cannot display pictures, or you may get ascii art.
+If you want a terminal that can display pictures, you should choose one with the following protocols: xterm-256color, xterm-kitty or iTerm.app.  
 Some would be:  
 - [wezterm](https://wezfurlong.org/wezterm/index.html)
 - [kitty](https://sw.kovidgoyal.net/kitty/)
@@ -161,13 +161,14 @@ Some would be:
 
 ## Displaying the picture on the command line
 
-Displaying the image on the command line is as easy as checking if the user has one of the "supported" terminal image viewers installed on their system and executing a command.  
+Displaying the image on the command line is as easy as checking if the user has one of the 
+"supported" terminal image viewers installed on their system and executing a command.
 With ```popen()``` we can pipe the output directly onto the terminal. 
 
 //
 ## Converting the png to ascii 
 
-image to ascii how why what
+image to ascii how why what  
 // 
 
 ## Converting characters
@@ -184,3 +185,4 @@ TODO:
 - image to ascii doesnt work yet
 - detect the image viewer the user has installed or install one as depency 
 - Downloading the picture takes a long time, maybe cache it ? Or put it somewhere that is not the top.
+- Readme is not long / detailed enough yet.
