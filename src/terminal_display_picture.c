@@ -71,12 +71,11 @@ size_t terminal_display_picture(const cJSON *current)
     const char *tmp_weather_png_filename = "src/resources/weather.png";
     // const char *ascii_image_filepath = "src/resources/ascii.png";
 
-    
+
     #if __linux__
         if(current != NULL) {
             weather_icons_array = cJSON_GetObjectItemCaseSensitive(current, "weather_icons");
             if (cJSON_IsArray(weather_icons_array)) {
-                printf("is array\n");
                 weather_icons_array_item = cJSON_GetArrayItem(weather_icons_array, 0);
                 if (cJSON_IsString(weather_icons_array_item) && (weather_icons_array_item->valuestring != NULL)) {
                 /* This downloades the picture that the api provides */
@@ -85,12 +84,10 @@ size_t terminal_display_picture(const cJSON *current)
 
                     weather_icon_image = curl_easy_init();
 
-                    printf("weather is string");
 
                     FILE *fp;
 
                     if (weather_icon_image) {
-                        printf("weather_icon_image is something\n");
                         fp = fopen(tmp_weather_png_filename, "wb+");
                         if (fp == NULL) { 
                             fprintf(stderr, "Error opening %s : %s", tmp_weather_png_filename, strerror(errno));
@@ -118,7 +115,7 @@ size_t terminal_display_picture(const cJSON *current)
         }
 
         printf("\n\033[1B");
-        // printf("         ");
+        printf("         ");
         FILE *user_command;
         char path[1024];
 
@@ -126,23 +123,23 @@ size_t terminal_display_picture(const cJSON *current)
         // snprintf(input, sizeof(input), "%s %s", user_image_viewer, tmp_weather_png_filename);
         // user_command = popen(input);
 
+	int test = system("timg src/resources/weather.png > /dev/null");
+	if (test != 0) {
+	    perror("Couldn't open picture check failed");
+	    printf("\n");
+	    return 1;
+	}
+	
         user_command = popen("timg src/resources/weather.png", "r");
 
         while (fgets(path, sizeof(path), user_command) != NULL) {
-            fprintf(stdout, "%s", path);
+           fprintf(stdout, "%s", path);
         }
         pclose(user_command);
 
-
-        // image_to_ascii();
-
-
-	    result = system("timg /src/resources/weather.png");
-        if (result != 0) {
-            fprintf(stderr, "Couldn't open image.\n");
-            return 1;
+        if (get_terminal_emulator_protocol() !=0L) {
+            image_to_ascii();
         }
-
     #endif 
 
     #ifdef __APPLE__

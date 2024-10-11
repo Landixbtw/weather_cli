@@ -262,7 +262,8 @@ int main(int argc, char *argv[])
     // }
 
 
-
+    current = cJSON_GetObjectItemCaseSensitive(json, "current");
+    terminal_display_picture(current);
 
     location = cJSON_GetObjectItemCaseSensitive(json, "location");
     if (location != NULL) {
@@ -275,7 +276,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    current = cJSON_GetObjectItemCaseSensitive(json, "current");
     if (current != NULL) {
         observation_time = cJSON_GetObjectItemCaseSensitive(current, "observation_time");
 

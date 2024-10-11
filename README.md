@@ -61,6 +61,14 @@ cd builddir
 meson compile
 ```
 
+### Installing the cli
+If you want to install the cli to your machine to be able to use it everywhere and not just in the directory.
+You can uncomment the following line in the meson.build file.
+
+```build
+meson.build install line
+```
+
 > [!Important]
 > On MacOS you might need to execute both commands with sudo.
 > Also when running the binary sudo ./weather_cli Berlin.
@@ -68,10 +76,14 @@ meson compile
 > and .png files might not be created.
 
 
-
 ###  Using the weather cli
 
-bla blah
+After building / installing the programm, you can just execute ./weather_cli 
+with no options to get a usage screen. That looks something like this.
+
+``` 
+
+```
 
 ### How it works
 
@@ -83,10 +95,5 @@ The cJSON library is in the repository so you only need curl and an api key.
 blah blah, api request, string manipulation, terminal and image viewer detection
 
 
-
 TODO:
-
-- The image is not being downloaded
-  - Why not ? 
-- Make two functions 1. For Downloading the image, 1. For displaying it.
 - image to ascii
