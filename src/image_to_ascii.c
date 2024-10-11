@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-// #include <caca.h>
 #include <curl/curl.h>
 #include <errno.h>
 #include <string.h>

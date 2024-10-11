@@ -261,7 +261,7 @@ int main(int argc, char *argv[])
         // }
     // }
 
-
+    
     current = cJSON_GetObjectItemCaseSensitive(json, "current");
     terminal_display_picture(current);
 
@@ -270,7 +270,6 @@ int main(int argc, char *argv[])
         name = cJSON_GetObjectItemCaseSensitive(location, "name");
 
         if (cJSON_IsString(name) && (name->valuestring != NULL )) {
-            //printf("\n\033[2A");
 	    fprintf(stdout, "\033[4mWeather report for:\033[0m ");
 	    fprintf(stdout, "%s\n", name->valuestring);
         }

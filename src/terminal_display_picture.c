@@ -11,9 +11,13 @@
 #include "../include/image_to_ascii.h"
 
 
-/* This function will check if you have the terminal image viewers installed, 
- * and if your terminal emulator can display a picture, if not you will be shown ascii.
-*/
+/* This function will check if you have the terminal image viewers installed,
+ * and if your terminal emulator can display a picture, if not you will be shown
+ * ascii.
+ */
+
+const char *tmp_weather_png_filename = "src/resources/weather.png";
+
 size_t terminal_display_picture(const cJSON *current) 
 {
 
@@ -51,7 +55,7 @@ size_t terminal_display_picture(const cJSON *current)
         // result = system(command);
 
         tmp_image_viewer = supported_image_viewers[0];
-        if (result == -1) {
+        if (result != 0) {
             perror("supported_image_viewers command returned something wrong/bad idk.\n");
             break;
         }
@@ -68,7 +72,6 @@ size_t terminal_display_picture(const cJSON *current)
 
     // TODO:  https://stackoverflow.com/questions/646241/c-run-a-system-command-and-get-output
 
-    const char *tmp_weather_png_filename = "src/resources/weather.png";
     // const char *ascii_image_filepath = "src/resources/ascii.png";
 
 
@@ -83,7 +86,6 @@ size_t terminal_display_picture(const cJSON *current)
                     CURLcode weather_icon_image_result;
 
                     weather_icon_image = curl_easy_init();
-
 
                     FILE *fp;
 
@@ -114,8 +116,9 @@ size_t terminal_display_picture(const cJSON *current)
             }
         }
 
-        printf("\n\033[1B");
-        printf("         ");
+	//printf("\033[1B");
+	printf("\n");
+	printf("         ");
         FILE *user_command;
         char path[1024];
 

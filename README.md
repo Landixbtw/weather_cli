@@ -1,8 +1,8 @@
 # Weather cli
 
 This is my 3rd attempt at a final project, and I think I found the balance this time, between having fun but it also not being too hard.
-my first attempt was trying to write a small operating system with c. But once I figured out that in freestanding I would have to implement libc myself, I put that project on hold.  
-I was / am pretty sure I would not have been able to make something working / something that I could present I about 7 Months. So I set my eye on making a small game with raylib and c. Sadly this burned when I was 70% finished since apprently playing games is just more fun then making them...  
+my first attempt was trying to write a small operating system with c. But once I figured out that in freestanding I would have to implement libc myself, I put that project on hold.
+I was / am pretty sure I would not have been able to make something working / something that I could present I about 7 months. So I set my eye on making a small game with raylib and c. Sadly this burned when I was 70% finished since apprently playing games is just more fun then making them... 
 I kinda wanted to do something that seemed simple in e.g python, but would still be a challenge in c. And since curl is a library that you encounter often, for example when downloading something. I had the idea to make this cli.
 
 ## Dependencies
@@ -34,7 +34,7 @@ Linux tux 6.10.10-arch1-1 #1 SMP PREEMPT_DYNAMIC Thu, 12 Sep 2024 17:21:02 +0000
 
 Last but not least you need your Weatherstack API key, which you can get with a Weatherstack account.  
 You can sign up here: https://weatherstack.com/signup/free  
-(With the free api you get 250 request per month, for 10$ a month you get 50,000.)  
+(With the free API you get 250 request per month, for 10$ a month you get 50,000.)  
 
 **Before** using ```meson setup builddir``` you have to create the `"WEATHERSTACK_API_KEY.env"` 
 file in `src/resources` (if the folder does not exist, create it) and paste your api key.
@@ -47,7 +47,7 @@ Also use the correct format. ↓
 
 Altough the error message might say different, use the format that is here CORRECT.
 
-### Building the binary
+## Building the binary
 
 Building is as easy as.  
 ```sh
@@ -58,7 +58,7 @@ cd builddir
 meson compile
 ```
 
-### Installing the cli
+## Installing the cli
 If you want to install the cli to your machine to be able to use it everywhere 
 and not just in the build directory. You can also set a custom path to install the programm. 
 If you so, I will not be able help you troubleshoot.
@@ -80,7 +80,7 @@ executable(
 This will install the cli to the default path. You can also set a custom path.
 If you want to read more about meson install you can read here [here](https://mesonbuild.com/Installing.html).
 
-###  Using the weather cli
+##  Using the weather cli
 
 After building / installing the programm, you can just execute ./weather_cli 
 with no options to get a usage screen. That looks something like this.
@@ -93,12 +93,13 @@ Example: ./weather_cli New+York
 
 > [!Important]
 > On MacOS you might need to execute both commands with sudo.
-> Also when running the binary sudo ./weather_cli Berlin.
+> Also when running the binary   
+> sudo ./weather_cli Berlin.
 > It might not let you compile, and when running without sudo the .json 
 > and .png files might not be created.
 
 
-### How it works
+## How it works
 
 The programm uses curl to make the api requests, to the weatherstack api. 
 It receives a json_data.json file, that is then being parsed by the cJSON library. 
@@ -118,8 +119,8 @@ api_success = cJSON_GetObjectItemCaseSensitive(json, "success");
             } else {
                 fprintf(stderr, "Uknown error code.\n");
             }
-        }
-    }
+		}
+	}
 ```
 
 The "json" is a cJSON pointer (```cJSON *json```) that has the content of the json_data.json file that we received. 
@@ -131,15 +132,24 @@ while (fread(buffer, file_size , 1, temp_json_file)) {
 }
 ```
 
-### Getting, downloading and displaying the weather picture
+## Getting and downloading the weather picture
 
-The weatherstack API 
-downloading the picture 
+The API this is all built on is the [weatherstack API](https://www.weatherstack.com).
+It provides us with all the information needed, and even provides a link to a picture.
+The picture that is being displayed / downloaded, is dependant on the weather of the 
+city we are trying to look up. The picture is then being downloaded with curl.
+
+## Determining the terminal emulator protocol
 
 terminal emulator protocol
+
+## Displaying the picture on the command line
+
+## Converting the png to ascii 
 
 image to ascii how why what
 
 TODO:
 - image to ascii doesnt work yet
 - detect the image viewer the user has installed or install one as depency 
+- Downloading the picture takes a long time, maybe cache it ? Or put it somewhere that is not the top.
