@@ -101,7 +101,7 @@ Example: ./weather_cli New+York
 ### How it works
 
 The programm uses curl to make the api requests, to the weatherstack api. 
-It receives a .json file, that is then being parsed by the cJSON library. 
+It receives a json_data.json file, that is then being parsed by the cJSON library. 
 The json data is then being split into the information that we want to display on the command line.
 
 For example like this:
@@ -122,7 +122,7 @@ api_success = cJSON_GetObjectItemCaseSensitive(json, "success");
     }
 ```
 
-The "json" is a cJSON pointer ```cJSON *json```that has the content of the .json file that we received. 
+The "json" is a cJSON pointer (```cJSON *json```) that has the content of the json_data.json file that we received. 
 That is stored in a file called temp_json_file that temporarily hold the content.
 
 ```c
@@ -131,8 +131,9 @@ while (fread(buffer, file_size , 1, temp_json_file)) {
 }
 ```
 
-Weatherstack api
+### Getting, downloading and displaying the weather picture
 
+The weatherstack API 
 downloading the picture 
 
 terminal emulator protocol
