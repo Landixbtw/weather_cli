@@ -149,6 +149,10 @@ terminal emulator protocol
 
 image to ascii how why what
 
+## Converting characters
+
+
+
 TODO:
 - image to ascii doesnt work yet
 - detect the image viewer the user has installed or install one as depency 
