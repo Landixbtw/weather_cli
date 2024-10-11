@@ -141,15 +141,42 @@ city we are trying to look up. The picture is then being downloaded with curl.
 
 ## Determining the terminal emulator protocol
 
-terminal emulator protocol
+Different terminal emulators, use different protocols, for example:  
+
+- xterm
+- xterm-256color
+- xterm-kitty
+- iTerm.app
+- mlterm
+
+Some are able to display pictures, and some are not, so in the ```terminal_support.c``` file, 
+we are checking which protocol your terminal emulator is using.  
+This way we can display different things depending on the outcome, on some terminals you will see a small picture with what the weather currently looks like.  
+And for some you will just get a small text telling you that your terminal emulator cannot display pictures, or you may get ascii art.  
+If you want a terminal that can display pictures, you should choose one with the following protocols: xterm-256color, xterm-kitty or iTerm.app.
+Some would be:  
+- [wezterm](https://wezfurlong.org/wezterm/index.html)
+- [kitty](https://sw.kovidgoyal.net/kitty/)
+
 
 ## Displaying the picture on the command line
 
+Displaying the image on the command line is as easy as checking if the user has one of the "supported" terminal image viewers installed on their system and executing a command.  
+With ```popen()``` we can pipe the output directly onto the terminal. 
+
+//
 ## Converting the png to ascii 
 
 image to ascii how why what
+// 
 
 ## Converting characters
+
+I am German, and in the german language there are so called "umlaute" these are the letters with the small points over them ö ä ü. Some city names most notably München.
+I had to discover that the weatherstack API does not support these umlaute. So I thought about how I can detect them and convert them to oe ae ue, 
+which means the same but is just displayed differently. So München -> Muenchen. I tried over days, but could not figure out. You can still find my inital
+attempts on trying to convert the characters, at the bottom of the ```main.c``` file. Eventually I caved and asked [claude.ai](https://www.claude.ai/new). 
+I was "ok far" off from the correct solution, but I just could not figure it out.
 
 
 

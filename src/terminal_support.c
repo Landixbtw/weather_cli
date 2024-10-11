@@ -42,6 +42,6 @@ size_t get_terminal_emulator_protocol(void)
     if (terminal_emulator_protocol && strcmp(terminal_emulator_protocol, "xterm-kitty") == 0) {
         return 0;
     }
-
-    return 1;
+    
+    return 0;
 }

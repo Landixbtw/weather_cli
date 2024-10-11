@@ -52,8 +52,8 @@ size_t terminal_display_picture(const cJSON *current)
         // run a test command for the supported image viewers, check the output if its good assign user_image_viewer
         char * tmp_image_viewer;
 
-        snprintf(command, sizeof(command), "%s > /dev/null", supported_image_viewers[0]);
-        result = system(command);
+        //snprintf(command, sizeof(command), "%s > /dev/null", supported_image_viewers[0]);
+        //result = system(command);
 
 	/* Search for the program in the PATH  kinda like which $s , supported_image_viewers[i] */
 	// https://stackoverflow.com/questions/41230547/check-if-program-is-installed-in-c
@@ -121,8 +121,6 @@ size_t terminal_display_picture(const cJSON *current)
         }
 
 	//printf("\033[1B");
-	printf("\n");
-	printf("         ");
         FILE *user_command;
         char path[1024];
 
@@ -130,23 +128,30 @@ size_t terminal_display_picture(const cJSON *current)
         // snprintf(input, sizeof(input), "%s %s", user_image_viewer, tmp_weather_png_filename);
         // user_command = popen(input);
 
+	
 	int test = system("timg src/resources/weather.png > /dev/null");
 	if (test != 0) {
 	    perror("Couldn't open picture check failed");
 	    printf("\n");
 	    return 1;
 	}
+
+        if (get_terminal_emulator_protocol() !=0L) {
+	    fprintf(stdout, "\n*A Picture of the current weather*\r\n");
+	    fprintf(stdout, "Your terminal emulator doesn't seem to support displaying pictures.\r\n");
+	    // image_to_ascii();
+        }
 	
         user_command = popen("timg src/resources/weather.png", "r");
 
-        while (fgets(path, sizeof(path), user_command) != NULL) {
+	printf("\n");
+	printf("         ");
+
+	while (fgets(path, sizeof(path), user_command) != NULL) {
            fprintf(stdout, "%s", path);
         }
         pclose(user_command);
 
-        if (get_terminal_emulator_protocol() !=0L) {
-            image_to_ascii();
-        }
     #endif 
 
     #ifdef __APPLE__
