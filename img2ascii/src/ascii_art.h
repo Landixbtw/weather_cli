@@ -162,7 +162,7 @@ void write_output(
     }
 
     if (flags & DEBUG_FLAG) {
-        printf(
+	    printf(
             "Input: %s \n"
             "Output: %s \n"
             "Resolution: %ix%i \n"

@@ -10,6 +10,8 @@
 #include "../include/terminal_support.h"
 #include "../include/image_to_ascii.h"
 #include "../include/terminal_display_picture.h"
+#include "../include/utils.h"
+
 
 #define MAX_URL_LENGTH 256
 #define PROGRAM_NAME "./weather_cli"
@@ -76,7 +78,7 @@ int main(int argc, char *argv[])
         build_url(url_string);
         free(transliterated);
     } else {
-        fprintf(stderr, "Usage: %s <city>\nExample: %s New+York\n", PROGRAM_NAME, PROGRAM_NAME);
+        show_usage(PROGRAM_NAME);
         fclose(read_api_key_file);
         return 1;
     }
@@ -251,6 +253,7 @@ int main(int argc, char *argv[])
 
 
     // FIX: How can this be more compact ? more better ?
+
     // request = cJSON_GetObjectItemCaseSensitive(json, "request");
 
     // if (request != NULL) {

@@ -17,8 +17,11 @@ size_t image_to_ascii(void)
   // this would be kinda sick but this is a cli, maybe put it into code and compile it aswell ?
   //  https://github.com/JosefVesely/img2ascii
 
+    // ascii-image-converter file/path -C
+    // https://github.com/TheZoraiz/ascii-image-converter
+
     /*
-     * convert src/resources/weather.png to ascii with libcaca
+     * convert src/resources/weather.png to asciia
      * return 0 if success return 1 if not
     */
 
@@ -32,7 +35,7 @@ size_t image_to_ascii(void)
 
         if (weather_png == NULL) {
         fprintf(stderr, "Couldn't open %s \nERROR: %s\n", weather_png_filepath, strerror(errno));
-          exit(EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         }
 
         char *tmp_command;
