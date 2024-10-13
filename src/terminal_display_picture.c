@@ -21,65 +21,21 @@ const char *tmp_weather_png_filename = "src/resources/weather.png";
 size_t terminal_display_picture(const cJSON *current) 
 {
 
-    // TODO: Determine if a cli of is installed, 
-    // if there is no cli there or the terminal cant display the picture try ascii
-    //
-    /* Terminal Image viewers 
-     *  timg
-     *  chafa
-    */
-
     char command[1024];
     int result = 0;
     const cJSON *weather_icons_array_item = NULL;
     const cJSON *weather_icons_array = NULL;
 
-    // These are all the image viewers that are "supported"
-    char *supported_image_viewers[] = { "timg" , "chafa" , NULL};
-    // This is the image viewer that is both on the user system and installed
-    char *user_image_viewer = "zero";
-
-
-    // NOTE: Alactritty seems to show the image but at a really bad quality
-    char *supported_terminals[] = { "ghostty", "kitty", "wezterm" , NULL };
-
-
-    // TODO: With the terminal emulator name we got check against the array, if its in there pass it to the command
-
-
-    /* We are magically checking if any of the imager viewers listed in the array are installed on the system */
-    for (int i = 0; supported_image_viewers[i] != NULL ;i++) {
-        // run a test command for the supported image viewers, check the output if its good assign user_image_viewer
-        char * tmp_image_viewer;
-
-        //snprintf(command, sizeof(command), "%s > /dev/null", supported_image_viewers[0]);
-        //result = system(command);
-
-	/* Search for the program in the PATH  kinda like which $s , supported_image_viewers[i] */
-	// https://stackoverflow.com/questions/41230547/check-if-program-is-installed-in-c
-        
-        if (result != 0) {
-            perror("supported_image_viewers command returned something wrong/bad idk.\n");
-            break;
-        }
-	
-	tmp_image_viewer = supported_image_viewers[0];
-        user_image_viewer = tmp_image_viewer ;
-    }
-
-
-    // smth like this: https://askubuntu.com/questions/210182/how-to-check-which-terminal-emulator-is-being-currently-used
-    // int result_terminal_emulator;
-
-    // der output von get_terminal_emulator_OS_MAC muss gegen den array von unterstützen terminals überprüft werden. 
-    // und dann muss man noch schauen welche image_vewer der user hat und dann das beide in den command gepumpt werden
-
-    // TODO:  https://stackoverflow.com/questions/646241/c-run-a-system-command-and-get-output
-
-    // const char *ascii_image_filepath = "src/resources/ascii.png";
-
+    char *supported_image_viewer = "timg";
 
     #if __linux__
+
+        if (get_terminal_emulator_protocol() !=0L) {
+	    fprintf(stdout, "\n*A Picture of the current weather*\r\n");
+	    fprintf(stdout, "Your terminal emulator doesn't seem to support displaying pictures.\r\n");
+	    // image_to_ascii();
+	 }
+	    
         if(current != NULL) {
             weather_icons_array = cJSON_GetObjectItemCaseSensitive(current, "weather_icons");
             if (cJSON_IsArray(weather_icons_array)) {
@@ -109,9 +65,6 @@ size_t terminal_display_picture(const cJSON *current)
                         }
                     }
 
-                    // snprintf(command, sizeof(command), "%s %s", user_image_viewer, tmp_weather_png_filename);
-                    // result = system(command);
-
                     curl_easy_cleanup(weather_icon_image);
                     fclose(fp);
                 } else {
@@ -123,11 +76,6 @@ size_t terminal_display_picture(const cJSON *current)
 	//printf("\033[1B");
         FILE *user_command;
         char path[1024];
-
-        // timg wird dann ersetzt durch user_image_viewer
-        // snprintf(input, sizeof(input), "%s %s", user_image_viewer, tmp_weather_png_filename);
-        // user_command = popen(input);
-
 	
 	int test = system("timg src/resources/weather.png > /dev/null");
 	if (test != 0) {
@@ -135,14 +83,8 @@ size_t terminal_display_picture(const cJSON *current)
 	    printf("\n");
 	    return 1;
 	}
-
-        if (get_terminal_emulator_protocol() !=0L) {
-	    fprintf(stdout, "\n*A Picture of the current weather*\r\n");
-	    fprintf(stdout, "Your terminal emulator doesn't seem to support displaying pictures.\r\n");
-	    // image_to_ascii();
-        }
 	
-        user_command = popen("timg src/resources/weather.png", "r");
+        user_command = popen("timg -b auto src/resources/weather.png", "r");
 
 	printf("\n");
 	printf("         ");

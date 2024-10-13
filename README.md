@@ -12,14 +12,20 @@ I kinda wanted to do something that seemed simple in e.g python, but would still
 You need [curl](https://curl.se) you can either [download](https://curl.se/download.html) it from the official website, or the build system ([meson](https://mesonbuild.com/index.html)) will download it for you since libcurl has a [meson wrapDB package](https://mesonbuild.com/Wrapdb-projects.html).
 
 ### Meson build system
-For meson you **need python**. You can find installation methods for meson [here](https://mesonbuild.com/Getting-meson.html).
-You also **need [ninja](https://ninja-build.org/)**.
+For meson you **need python**. You can find installation methods for meson [here](https://mesonbuild.com/Getting-meson.html).  
+You also **need [ninja](https://ninja-build.org/)**.  
 
+### timg
+The weather_cli uses [timg](https://github.com/hzeller/timg/) to display the images on the terminal. Meson will check if timg is installed, if not it will not setup the builddir.  
+
+> [!NOTE]
+> THERE IS NO MAC SUPPORT CURRENTLY I DONT THINK THIS WORKS FOR MAC RIGHT NOW.
 ### MacOs 
 ```sh
 brew install pkg-config 
 brew install ninja
 brew install meson
+brew install timg
 ```
 
 ### Arch Linux
@@ -27,12 +33,7 @@ brew install meson
 pacman -S pkgconf
 pacman -S ninja
 pacman -S meson
-```
-
-Building this has been tested on.  
-```sh
-Linux tux 6.10.10-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
-Linux tux 6.11.3-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
+yay -S timg
 ```
 
 ### Weatherstack API Key
@@ -60,6 +61,12 @@ meson setup builddir
 cd builddir
 
 meson compile
+```
+
+Building this has been tested on.  
+```sh
+Linux tux 6.10.10-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
+Linux tux 6.11.3-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
 ```
 
 ## Installing the cli
@@ -186,8 +193,7 @@ I was "ok far" off from the correct solution, but I just could not figure it out
 
 
 TODO:
-- image to ascii doesnt work yet
-- detect the image viewer the user has installed or install one as depency 
+-- image to ascii doesnt work yet --
 - Downloading the picture takes a long time, maybe cache it ? Or put it somewhere that is not the top.
 - Readme is not long / detailed enough yet.
 - Go more into detail with term emulator protocol ?

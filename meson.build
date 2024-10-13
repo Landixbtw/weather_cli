@@ -12,6 +12,9 @@ lib = library('cJSON', 'src/cJSON.c')
 img2ascii_source_dir = join_paths(meson.source_root(), 'img2ascii')
 img2ascii_build_dir = join_paths(meson.build_root(), 'img2ascii')
 
+# Check in timg is installed if the program is not found, this wont setup the builddir
+find_program('timg', required: true)
+
 # Custom target to copy img2ascii to the build directory
 copy_img2ascii = custom_target(
   'copy-img2ascii',
