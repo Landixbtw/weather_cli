@@ -26,11 +26,12 @@ size_t terminal_display_picture(const cJSON *current)
     const cJSON *weather_icons_array_item = NULL;
     const cJSON *weather_icons_array = NULL;
 
+    // replace the tmp image filename with the whole ass download path for the picture with src/resources/***.png
     char *supported_image_viewer = "timg";
 
     #if __linux__
 
-        if (get_terminal_emulator_protocol() !=0L) {
+        if (get_terminal_emulator_protocol() !=0 ) {
 	    fprintf(stdout, "\n*A Picture of the current weather*\r\n");
 	    fprintf(stdout, "Your terminal emulator doesn't seem to support displaying pictures.\r\n");
 	    // image_to_ascii();
@@ -52,7 +53,7 @@ size_t terminal_display_picture(const cJSON *current)
                     if (weather_icon_image) {
                         fp = fopen(tmp_weather_png_filename, "wb+");
                         if (fp == NULL) { 
-                            fprintf(stderr, "Error opening %s : %s", tmp_weather_png_filename, strerror(errno));
+                            fprintf(stderr, "Error opening %s : %s\n", tmp_weather_png_filename, strerror(errno));
                         }
 
                         curl_easy_setopt(weather_icon_image, CURLOPT_URL, weather_icons_array_item->valuestring);
@@ -75,15 +76,19 @@ size_t terminal_display_picture(const cJSON *current)
 
 	//printf("\033[1B");
         FILE *user_command;
-        char path[1024];
-	
-	int test = system("timg src/resources/weather.png > /dev/null");
-	if (test != 0) {
-	    perror("Couldn't open picture check failed");
+	// CAN FIX MAGIC NUMBERS ?
+	char path[1024];
+	char tmp_check[1024];
+
+	snprintf(tmp_check, sizeof(tmp_check), "timg %s > /dev/null ", tmp_weather_png_filename);
+	int user_image_check = system(tmp_check);
+	if (user_image_check != 0) {
+	    perror("Couldn't open picture check failed.");
 	    printf("\n");
 	    return 1;
 	}
-	
+
+	// TODO: MAKE FLEXIBLE
         user_command = popen("timg -b auto src/resources/weather.png", "r");
 
 	printf("\n");

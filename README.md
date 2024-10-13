@@ -197,3 +197,4 @@ TODO:
 - Downloading the picture takes a long time, maybe cache it ? Or put it somewhere that is not the top.
 - Readme is not long / detailed enough yet.
 - Go more into detail with term emulator protocol ?
+- Maybe find a way to actually cache the pictures, shouldn't be that much since you would only look up the places around you 
