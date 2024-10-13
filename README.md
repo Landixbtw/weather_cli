@@ -1,8 +1,9 @@
 # Weather cli
+!! Rewrite this !!
 
 This is my 3rd attempt at a final project, and I think I found the balance this time, between having fun but it also not being too hard.
 my first attempt was trying to write a small operating system with c. But once I figured out that in freestanding I would have to implement libc myself, I put that project on hold.
-I was / am pretty sure I would not have been able to make something working / something that I could present I about 7 months. So I set my eye on making a small game with raylib and c. Sadly this burned when I was 70% finished since apprently playing games is just more fun then making them... 
+I was / am pretty sure I would not have been able to make something working / something that I could present in about 7 months. So I set my eye on making a small game with raylib and c. Sadly this burned when I was 70% finished since apprently playing games is just more fun then making them... 
 I kinda wanted to do something that seemed simple in e.g python, but would still be a challenge in c. And since curl is a library that you encounter often, for example when downloading something. I had the idea to make this cli.
 
 ## Dependencies
@@ -12,22 +13,26 @@ You need [curl](https://curl.se) you can either [download](https://curl.se/downl
 
 ### Meson build system
 For meson you **need python**. You can find installation methods for meson [here](https://mesonbuild.com/Getting-meson.html).
+You also **need [ninja](https://ninja-build.org/)**.
 
 ### MacOs 
-
 ```sh
 brew install pkg-config 
+brew install ninja
+brew install meson
 ```
 
 ### Arch Linux
 ```sh
-pacman -S meson
 pacman -S pkgconf
+pacman -S ninja
+pacman -S meson
 ```
 
-Building this has only been tested on.  
+Building this has been tested on.  
 ```sh
-Linux tux 6.10.10-arch1-1 #1 SMP PREEMPT_DYNAMIC Thu, 12 Sep 2024 17:21:02 +0000 x86_64 GNU/Linux
+Linux tux 6.10.10-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
+Linux tux 6.11.3-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
 ```
 
 ### Weatherstack API Key
@@ -39,7 +44,6 @@ You can sign up here: https://weatherstack.com/signup/free
 **Before** using ```meson setup builddir``` you have to create the `"WEATHERSTACK_API_KEY.env"` 
 file in `src/resources` (if the folder does not exist, create it) and paste your api key.
 Also use the correct format. ↓
-
 
 > [!NOTE]
 > CORRECT FORMAT: YOUR_ACCESS_KEY  
@@ -85,7 +89,7 @@ If you want to read more about meson install you can read here [here](https://me
 After building / installing the programm, you can just execute ./weather_cli 
 with no options to get a usage screen. That looks something like this.
 
-``` 
+```
 ➜  builddir git:(main) ./weather_cli
 Usage: ./weather_cli <city>
 Example: ./weather_cli New+York
@@ -186,3 +190,4 @@ TODO:
 - detect the image viewer the user has installed or install one as depency 
 - Downloading the picture takes a long time, maybe cache it ? Or put it somewhere that is not the top.
 - Readme is not long / detailed enough yet.
+- Go more into detail with term emulator protocol ?
