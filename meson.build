@@ -1,5 +1,5 @@
 # You can change the name of the cli by replacing 'main' with 'your desired name'
-project('main', 'c')
+project('main', 'c', version: '0.1')
 
 # caca_deps = [dependency('caca')]
 curL_deps = [dependency('libcurl')]
