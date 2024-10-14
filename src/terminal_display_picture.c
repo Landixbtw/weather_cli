@@ -77,7 +77,6 @@ size_t terminal_display_picture(const cJSON *current)
                     if (t_weather_icons_array_item_string == NULL) {
                         fprintf(stderr, "Memory allocation for t_weather_icons_array_item_string failed :: %s", strerror(errno));
                     }
-                    fprintf(stdout, "first: %s \n", weather_icons_array_item->valuestring);
                     strcpy(t_weather_icons_array_item_string, (char *)weather_icons_array_item->valuestring);
                     char *t_filename = get_filename(t_weather_icons_array_item_string);
 
@@ -88,12 +87,8 @@ size_t terminal_display_picture(const cJSON *current)
                     }
 
                     filename = malloc(sizeof(strlen(t_filename)));
-                    char full_path[8192];
-
-                    snprintf(full_path, sizeof(full_path), "%s/src/resources/%s", full_path, filename);
                     snprintf(filename, strlen(t_weather_icons_array_item_string) + strlen("src/resources/"),"src/resources/%s", t_filename);
                     if (weather_icon_image ) {
-                        printf("%s\n", filename);
                         fp = fopen(filename, "wb+");
                         if (fp == NULL) { 
                             fprintf(stderr, "Error opening %s :: %s\n", filename, strerror(errno));
@@ -121,10 +116,10 @@ size_t terminal_display_picture(const cJSON *current)
     FILE *user_command;
     // CAN FIX MAGIC NUMBERS ?
     char path[2048];
-    char t_check[1024];
+    char _check[1024];
 
-    snprintf(t_check, sizeof(t_check), "timg \"%s\" > /dev/null 2>&1", filename);
-    int user_image_check = system(t_check);
+    snprintf(_check, sizeof(_check), "timg %s > /dev/null 2>&1", filename);
+    int user_image_check = system(_check);
     if (user_image_check != 0) {
         perror("Couldn't open picture! Check failed.");
         fprintf(stdout, "\n");
@@ -132,9 +127,9 @@ size_t terminal_display_picture(const cJSON *current)
     }
 
     // TODO: MAKE FLEXIBLE
-    char t_test[1025];
-    snprintf(t_test, sizeof(t_test), "timg -b auto %s", filename);
-    user_command = popen(t_test, "r");
+    char _test[1025];
+    snprintf(_test, sizeof(_test), "timg -b auto %s", filename);
+    user_command = popen(_test, "r");
     if (user_command == NULL) {
         perror("popen failed.");
         return 1;
@@ -146,9 +141,8 @@ size_t terminal_display_picture(const cJSON *current)
     // FIX: Programm crashes here
     /*
      *corrupted size vs. prev_size
-sh: -c: Zeile 3: Dateiende beim Suchen nach »"« erreicht.
-[1]    64478 IOT instruction (core dumped)  ./main new+york
-     *
+     * sh: : Zeile 3: Dateiende beim Suchen nach »"« erreicht.
+     * [1]    64478 IOT instruction (core dumped)  ./main new+york
     */
 
 
@@ -176,7 +170,7 @@ sh: -c: Zeile 3: Dateiende beim Suchen nach »"« erreicht.
         fprintf(stderr, "Command terminated by signal %d\n", WTERMSIG(close_result));
     }
 
-    pclose(user_command);
+    //pclose(user_command);
     free(filename);
 
     #endif 
