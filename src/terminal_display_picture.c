@@ -4,6 +4,7 @@
 #include <curl/easy.h>
 #include <errno.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "../include/cJSON.h"
 #include "../include/terminal_support.h"
@@ -32,17 +33,19 @@ char *get_filename(const char *url)
     return tmp_filename;
 }
 
-const char *tmp_weather_png_filename = "src/resources/weather.png";
-
 /* BUG: Somewhere is heap corruption we attempt to access memory that is not allocated */
+/* Only crashes sometimes, but not everytime, about 60% */
+
+// TODO: Copy the files into src/resources folder.
 
 size_t terminal_display_picture(const cJSON *current) 
 {
-    int result = 0;
+    // int result = 0;
     const cJSON *weather_icons_array_item = NULL;
     const cJSON *weather_icons_array = NULL;
-    char weather_image_filepath[1025];
+    // char weather_image_filepath[1025];
     char *filename;
+
     // replace the tmp image filename with the whole ass download path for the picture with src/resources/***.png
     char *supported_image_viewer = "timg";
 
@@ -60,13 +63,12 @@ size_t terminal_display_picture(const cJSON *current)
                 weather_icons_array_item = cJSON_GetArrayItem(weather_icons_array, 0);
                 if (cJSON_IsString(weather_icons_array_item) && (weather_icons_array_item->valuestring != NULL)) {
                 /* This downloades the picture that the api provides */
-                    CURL *weather_icon_image;
                     CURLcode weather_icon_image_result;
-                    weather_icon_image = curl_easy_init();
-                    FILE *fp;
-                    // sprintf(weather_image_filepath,"/src/resources/%s", weather_icons_array_item->valuestring);
-                    //printf("%s", weather_image_filepath);
 
+                    CURL *weather_icon_image;
+                    weather_icon_image = curl_easy_init();
+
+                    FILE *fp;
 
                     /*
                      * NOTE: We now have the filename but with slash, gotta get rid of that.
@@ -76,64 +78,87 @@ size_t terminal_display_picture(const cJSON *current)
                     */
 
                     char *t_weather_icons_array_item_string = malloc(strlen(weather_icons_array_item->valuestring) + 1);
+
                     if (t_weather_icons_array_item_string == NULL) {
-                        fprintf(stderr, "Memory allocation for t_weather_icons_array_item_string failed :: %s", strerror(errno));
+                        fprintf(stderr, "Memory allocation for %s failed %s", t_weather_icons_array_item_string, strerror(errno));
                     }
                     strcpy(t_weather_icons_array_item_string, (char *)weather_icons_array_item->valuestring);
                     char *t_filename = get_filename(t_weather_icons_array_item_string);
 
-                    if (t_filename != NULL) {
-                        // fprintf(stderr, "filename: %s\n", t_filename);
-                    } else {
-                        fprintf(stderr, "Failed to get filename\n");
+                    if (t_filename == NULL) {
+                        fprintf(stderr, "Failed to get filename %s", strerror(errno));
+                        printf("\n");
                     }
 
-                    filename = malloc(sizeof(char *) * strlen(filename));
-                    snprintf(filename, strlen(t_weather_icons_array_item_string) + strlen("src/resources/"),"src/resources/%s", t_filename);
-                    // printf("filename: %s", filename);
-                    if (weather_icon_image ) {
+                    // this was my allocation for filename but this is apparently better
+                    // filename = malloc(sizeof(char *) * strlen(t_filename));
+
+                    size_t needed_size = snprintf(NULL, 0, "../src/resources/%s", t_filename) + 1;
+                    char *filename = malloc(needed_size);
+
+                    if (filename == NULL) {
+                        fprintf(stderr, "Couldn't allocate enough memory for %s %s", filename, strerror(errno));
+                        printf("\n");
+                    }
+
+                    snprintf(filename, needed_size ,"../src/resources/%s", t_filename);
+                    // Check if the file already exists. if no then do this
+                    // https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c/230068#230068
+                    if (access(filename, F_OK) != 0 && weather_icon_image) {
                         fp = fopen(filename, "wb+");
+                        // BUG: For some reason fp seems to be NULL, but picture is there
                         if (fp == NULL) { 
-                            fprintf(stderr, "Error opening %s :: %s\n", filename, strerror(errno));
+                            fprintf(stderr, "Error opening %s: %s", filename, strerror(errno));
+                            printf("\n");
+                            return 1;
                         }
+
                         curl_easy_setopt(weather_icon_image, CURLOPT_URL, weather_icons_array_item->valuestring);
                         curl_easy_setopt(weather_icon_image, CURLOPT_WRITEFUNCTION, NULL);
                         curl_easy_setopt(weather_icon_image, CURLOPT_WRITEDATA, fp);
 
+                        printf("downloaded image\n");
                         weather_icon_image_result = curl_easy_perform(weather_icon_image);
                         if (weather_icon_image_result != 0) {
-                            perror("Cannot download image\n");
+                            perror("Cannot download image");
+                            printf("\n");
+                            return 1;
                         }
+                    } else if (errno == ENOENT ){
+                        fprintf(stderr, "File does not exist in path! %s", strerror(errno));
+                        printf("\n");
+                        return 1;
                     }
-
                     free(t_weather_icons_array_item_string);
                     curl_easy_cleanup(weather_icon_image);
                     fclose(fp);
                 } else {
-                    fprintf(stderr, "weather_icons_array_item :: %s\n", strerror(errno));
+                    fprintf(stderr, "weather_icons_array_item. %s", strerror(errno));
+                    printf("\n");
                 }
             }
         }
 
-    //printf("\033[1B");
     FILE *user_command;
     // CAN FIX MAGIC NUMBERS ?
     char path[1024];
     char tmp_check[1024];
 
-    snprintf(tmp_check, sizeof(tmp_check), "timg %s > /dev/null 2>&1", filename);
-    int user_image_check = system(tmp_check);
+    printf("%s %s", supported_image_viewer, filename);
+    snprintf(tmp_check, sizeof(tmp_check), "%s %s > /dev/null 2>&1", supported_image_viewer , filename);
+    long user_image_check = system(tmp_check);
     if (user_image_check != 0) {
-        perror("Couldn't open picture! Check failed.\n");
+        perror("Couldn't open picture! Check failed");
+        fprintf(stderr, "\n%s %s > /dev/null 2>&1 returned %ld\n", supported_image_viewer, filename, user_image_check);
         return 1;
     }
 
     // TODO: MAKE FLEXIBLE
     char tmp_test[1024];
-    snprintf(tmp_test, sizeof(tmp_test), "timg -b auto %s", filename);
+    snprintf(tmp_test, sizeof(tmp_test), "%s -b auto %s", supported_image_viewer ,filename);
     user_command = popen(tmp_test, "r");
     if (user_command == NULL) {
-        perror("popen failed.");
+        perror("popen failed");
         return 1;
     }
 
@@ -165,7 +190,6 @@ size_t terminal_display_picture(const cJSON *current)
         fprintf(stderr, "Command terminated by signal %d\n", WTERMSIG(close_result));
     }
 
-    //pclose(user_command);
     free(filename);
 
     #endif 
@@ -174,17 +198,10 @@ size_t terminal_display_picture(const cJSON *current)
 
         fprintf(stdout, "MacOS Detected \n");
         char *get_terminal_emulator_OS_MAC = "echo $TERM_PROGRAM";
-
-        // der output von get_terminal_emulator_OS_MAC muss gegen den array von unterstützen terminals überprüft werden. 
-        // und dann muss man noch schauen welche image_vewer der user hat und dann das beide in den command gepumpt werden
-        // und 
-
-        char *terminal_emulator_name_OS_MAC;
         system(get_terminal_emulator_OS_MAC);
-
         result_terminal_emulator = system(get_terminal_emulator_OS_MAC);
 
-        if (result_terminal_emulator == -1) {
+        if (result_terminal_emulator != 0) {
             fprintf(stderr, "Couldn't determine terminal emulator");
             return 1;
         } else {

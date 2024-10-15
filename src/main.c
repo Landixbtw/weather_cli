@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
+#include <errno.h>
+
 
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -163,7 +165,8 @@ int main(int argc, char *argv[])
     // get a buffer, that is as big as the file.
     char *buffer = malloc(file_size + 1);
     if (buffer == NULL) {
-        fprintf(stderr, "Couldn't allocate enough memory.\n");
+        fprintf(stderr, "Couldn't allocate enough memory %s", strerror(errno));
+        printf("\n");
         fclose(temp_json_file);
         return 1;
     }
@@ -264,7 +267,7 @@ int main(int argc, char *argv[])
         // }
     // }
 
-    
+
     current = cJSON_GetObjectItemCaseSensitive(json, "current");
     terminal_display_picture(current);
 
