@@ -199,3 +199,5 @@ TODO:
 - Go more into detail with term emulator protocol ?
 - Maybe find a way to actually cache the pictures, shouldn't be that much since you would only look up the places around you 
 - Make more code comments ?
+- Also push the images from resource folder 
+- Programm works sometimes, sometimes segfault
