@@ -101,12 +101,13 @@ size_t terminal_display_picture(const cJSON *current)
                         printf("\n");
                     }
 
+                    // TODO: IS the filename checked correctly ?
+                    // FIX: Why does this immediatly segfault
                     snprintf(filename, needed_size ,"../src/resources/%s", t_filename);
                     // Check if the file already exists. if no then do this
                     // https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c/230068#230068
                     if (access(filename, F_OK) != 0 && weather_icon_image) {
                         fp = fopen(filename, "wb+");
-                        // BUG: For some reason fp seems to be NULL, but picture is there
                         if (fp == NULL) { 
                             fprintf(stderr, "Error opening %s: %s", filename, strerror(errno));
                             printf("\n");
