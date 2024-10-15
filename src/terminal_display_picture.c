@@ -19,20 +19,22 @@ static size_t header_callback(char *buffer, size_t size, size_t nitems, void *us
 char *get_filename(const char *url)
 {
     // find the last occurence of "/" in the url. with strrchr()
-    char *t_filename = strrchr(url, '/');
+    char *tmp_filename = strrchr(url, '/');
     /* If filename is NULL there was no slash found in the url */
-    if (t_filename == NULL) {
+    if (tmp_filename == NULL) {
         return NULL;
     }
     // https://stackoverflow.com/questions/4295754/how-to-remove-first-character-from-c-string
-    if (t_filename[0] == '/') {
+    if (tmp_filename[0] == '/') {
         /* copy n bytes from memory area src to memory area dest */
-        memmove(/*dest*/ t_filename, /*src*/t_filename+1, /*size*/strlen(t_filename));
+        memmove(/*dest*/ tmp_filename, /*src*/tmp_filename+1, /*size*/strlen(tmp_filename));
     }
-    return t_filename;
+    return tmp_filename;
 }
 
 const char *tmp_weather_png_filename = "src/resources/weather.png";
+
+/* BUG: Somewhere is heap corruption we attempt to access memory that is not allocated */
 
 size_t terminal_display_picture(const cJSON *current) 
 {
@@ -81,13 +83,14 @@ size_t terminal_display_picture(const cJSON *current)
                     char *t_filename = get_filename(t_weather_icons_array_item_string);
 
                     if (t_filename != NULL) {
-                        fprintf(stderr, "filename: %s\n", t_filename);
+                        // fprintf(stderr, "filename: %s\n", t_filename);
                     } else {
                         fprintf(stderr, "Failed to get filename\n");
                     }
 
-                    filename = malloc(sizeof(strlen(t_filename)));
+                    filename = malloc(sizeof(char *) * strlen(filename));
                     snprintf(filename, strlen(t_weather_icons_array_item_string) + strlen("src/resources/"),"src/resources/%s", t_filename);
+                    // printf("filename: %s", filename);
                     if (weather_icon_image ) {
                         fp = fopen(filename, "wb+");
                         if (fp == NULL) { 
@@ -115,21 +118,20 @@ size_t terminal_display_picture(const cJSON *current)
     //printf("\033[1B");
     FILE *user_command;
     // CAN FIX MAGIC NUMBERS ?
-    char path[2048];
-    char _check[1024];
+    char path[1024];
+    char tmp_check[1024];
 
-    snprintf(_check, sizeof(_check), "timg %s > /dev/null 2>&1", filename);
-    int user_image_check = system(_check);
+    snprintf(tmp_check, sizeof(tmp_check), "timg %s > /dev/null 2>&1", filename);
+    int user_image_check = system(tmp_check);
     if (user_image_check != 0) {
-        perror("Couldn't open picture! Check failed.");
-        fprintf(stdout, "\n");
+        perror("Couldn't open picture! Check failed.\n");
         return 1;
     }
 
     // TODO: MAKE FLEXIBLE
-    char _test[1025];
-    snprintf(_test, sizeof(_test), "timg -b auto %s", filename);
-    user_command = popen(_test, "r");
+    char tmp_test[1024];
+    snprintf(tmp_test, sizeof(tmp_test), "timg -b auto %s", filename);
+    user_command = popen(tmp_test, "r");
     if (user_command == NULL) {
         perror("popen failed.");
         return 1;
@@ -137,13 +139,6 @@ size_t terminal_display_picture(const cJSON *current)
 
     fprintf(stdout, "\n");
     fprintf(stdout, "         ");
-
-    // FIX: Programm crashes here
-    /*
-     *corrupted size vs. prev_size
-     * sh: : Zeile 3: Dateiende beim Suchen nach »"« erreicht.
-     * [1]    64478 IOT instruction (core dumped)  ./main new+york
-    */
 
 
     while (fgets(path, sizeof(path), user_command) != NULL) {
