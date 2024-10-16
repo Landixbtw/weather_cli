@@ -4,7 +4,8 @@
 #include <curl/easy.h>
 #include <errno.h>
 #include <string.h>
-#include <unistd.h>
+#include <sys/stat.h>
+#include <stdbool.h>
 
 #include "../include/cJSON.h"
 #include "../include/terminal_support.h"
@@ -20,33 +21,33 @@ static size_t header_callback(char *buffer, size_t size, size_t nitems, void *us
 char *get_filename(const char *url)
 {
     // find the last occurence of "/" in the url. with strrchr()
-    char *tmp_filename = strrchr(url, '/');
+    char *filename = strrchr(url, '/');
     /* If filename is NULL there was no slash found in the url */
-    if (tmp_filename == NULL) {
+    if (filename == NULL) {
         return NULL;
     }
     // https://stackoverflow.com/questions/4295754/how-to-remove-first-character-from-c-string
-    if (tmp_filename[0] == '/') {
+    if (filename[0] == '/') {
         /* copy n bytes from memory area src to memory area dest */
-        memmove(/*dest*/ tmp_filename, /*src*/tmp_filename+1, /*size*/strlen(tmp_filename));
+        memmove(/*dest*/ filename, /*src*/filename+1, /*size*/strlen(filename));
     }
-    return tmp_filename;
+    return filename;
 }
 
-/* BUG: Somewhere is heap corruption we attempt to access memory that is not allocated */
-/* Only crashes sometimes, but not everytime, about 60% */
+// https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c
+bool file_exists (char *filename) {
+  struct stat   buffer;   
+  return (stat (filename, &buffer) == 0);
+}
 
-// TODO: Copy the files into src/resources folder.
 
 size_t terminal_display_picture(const cJSON *current) 
 {
     // int result = 0;
     const cJSON *weather_icons_array_item = NULL;
     const cJSON *weather_icons_array = NULL;
-    // char weather_image_filepath[1025];
     char *filename;
-
-    // replace the tmp image filename with the whole ass download path for the picture with src/resources/***.png
+    char *t_weather_icons_array_item_string;
     char *supported_image_viewer = "timg";
 
     #if __linux__
@@ -70,14 +71,8 @@ size_t terminal_display_picture(const cJSON *current)
 
                     FILE *fp;
 
-                    /*
-                     * NOTE: We now have the filename but with slash, gotta get rid of that.
-                     * Next I need to implement the caching mechanism.
-                     * We should check if the filename is already in src/resources/##.png
-                     * If yes, use this, if not download it
-                    */
-
-                    char *t_weather_icons_array_item_string = malloc(strlen(weather_icons_array_item->valuestring) + 1);
+                    size_t needed_size_t = strlen(weather_icons_array_item->valuestring) + 1;
+                    t_weather_icons_array_item_string = malloc(needed_size_t);
 
                     if (t_weather_icons_array_item_string == NULL) {
                         fprintf(stderr, "Memory allocation for %s failed %s", t_weather_icons_array_item_string, strerror(errno));
@@ -93,6 +88,7 @@ size_t terminal_display_picture(const cJSON *current)
                     // this was my allocation for filename but this is apparently better
                     // filename = malloc(sizeof(char *) * strlen(t_filename));
 
+                    printf("%s\n", t_filename);
                     size_t needed_size = snprintf(NULL, 0, "../src/resources/%s", t_filename) + 1;
                     char *filename = malloc(needed_size);
 
@@ -102,11 +98,13 @@ size_t terminal_display_picture(const cJSON *current)
                     }
 
                     // TODO: IS the filename checked correctly ?
-                    // FIX: Why does this immediatly segfault
+
                     snprintf(filename, needed_size ,"../src/resources/%s", t_filename);
                     // Check if the file already exists. if no then do this
                     // https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c/230068#230068
-                    if (access(filename, F_OK) != 0 && weather_icon_image) {
+
+                    if (file_exists(filename) && weather_icon_image) {
+                        printf("File does exist at path: %s\n", filename);
                         fp = fopen(filename, "wb+");
                         if (fp == NULL) { 
                             fprintf(stderr, "Error opening %s: %s", filename, strerror(errno));
@@ -118,19 +116,14 @@ size_t terminal_display_picture(const cJSON *current)
                         curl_easy_setopt(weather_icon_image, CURLOPT_WRITEFUNCTION, NULL);
                         curl_easy_setopt(weather_icon_image, CURLOPT_WRITEDATA, fp);
 
-                        printf("downloaded image\n");
                         weather_icon_image_result = curl_easy_perform(weather_icon_image);
                         if (weather_icon_image_result != 0) {
                             perror("Cannot download image");
                             printf("\n");
                             return 1;
                         }
-                    } else if (errno == ENOENT ){
-                        fprintf(stderr, "File does not exist in path! %s", strerror(errno));
-                        printf("\n");
-                        return 1;
                     }
-                    free(t_weather_icons_array_item_string);
+                    printf("filename before clean: %s\n", filename);
                     curl_easy_cleanup(weather_icon_image);
                     fclose(fp);
                 } else {
@@ -145,7 +138,14 @@ size_t terminal_display_picture(const cJSON *current)
     char path[1024];
     char tmp_check[1024];
 
-    printf("%s %s", supported_image_viewer, filename);
+    fflush(stdout);
+    if (filename == NULL) {
+        printf("filename is NULL before check\n");
+    } else {
+        printf("filename before check: %s \n", filename);
+    }
+    fflush(stdout);
+
     snprintf(tmp_check, sizeof(tmp_check), "%s %s > /dev/null 2>&1", supported_image_viewer , filename);
     long user_image_check = system(tmp_check);
     if (user_image_check != 0) {
@@ -192,6 +192,9 @@ size_t terminal_display_picture(const cJSON *current)
     }
 
     free(filename);
+    free(t_weather_icons_array_item_string);
+
+
 
     #endif 
 
