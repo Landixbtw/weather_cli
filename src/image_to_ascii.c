@@ -8,8 +8,8 @@
 #include "../include/terminal_support.h"
 
 
-const char *weather_png_filepath = "src/resources/weather.png";
-const char *ascii_png_filepath = "src/resources/ascii.png";
+const char *WEATHER_PNG_FILEPATH = "src/resources/weather.png";
+const char *ASCII_PNG_FILEPATH = "src/resources/ascii.png";
 
 size_t image_to_ascii(void)
 {
@@ -26,7 +26,7 @@ size_t image_to_ascii(void)
     */
 
     if (get_terminal_emulator_protocol() != 0) {
-        FILE *weather_png = fopen(weather_png_filepath, "rb");
+        FILE *weather_png = fopen(WEATHER_PNG_FILEPATH, "rb");
         // FIX: MAGIC NUMBERS
         char path[1024] = {"0"};
         char input[2048] = {"0"};
@@ -34,25 +34,27 @@ size_t image_to_ascii(void)
         FILE *img2ascii_command;
 
         if (weather_png == NULL) {
-        fprintf(stderr, "Couldn't open %s \nERROR: %s\n", weather_png_filepath, strerror(errno));
+        fprintf(stderr, "Couldn't open %s \nERROR: %s\n", WEATHER_PNG_FILEPATH, strerror(errno));
             exit(EXIT_FAILURE);
         }
 
-        char *tmp_command;
-        snprintf(tmp_input, sizeof(tmp_input), "./img2ascii/img2ascii --input %s --output %s > /dev/null", weather_png_filepath, ascii_png_filepath);
+        const char *TMP_COMMAND = "./img2ascii/img2ascii";
+        snprintf(tmp_input, sizeof(tmp_input), "./img2ascii/img2ascii --input %s --output %s > /dev/null", WEATHER_PNG_FILEPATH, ASCII_PNG_FILEPATH);
 
-        int result = system(tmp_command);
-        if (result == -1 ) {
+        int result = system(TMP_COMMAND);
+        if (result != 0 ) {
             fprintf(stderr, "Cannot open the img2ascii cli tool\n");
         }
 
-        snprintf(input, sizeof(input), "./img2ascii/img2ascii --print --input %s", weather_png_filepath);
+        snprintf(input, sizeof(input), "./img2ascii/img2ascii --print --input %s", WEATHER_PNG_FILEPATH);
         img2ascii_command = popen(input , "r");
 
         while (fgets(path, sizeof(path), img2ascii_command) != NULL) {
             fprintf(stdout, "%s", path);
         }
 
+        fclose(img2ascii_command);
+        fclose(weather_png);
         printf("\n");
         return 0;
     }

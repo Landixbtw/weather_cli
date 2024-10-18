@@ -19,8 +19,8 @@
 #define PROGRAM_NAME "./weather_cli"
 
 
-const char *api_key_filename = "src/resources/WEATHERSTACK_API_KEY.env";
-const char *json_filename = "src/resources/json_data.json";
+const char *API_KEY_FILENAME = "src/resources/WEATHERSTACK_API_KEY.env";
+const char *JSON_FILENAME = "src/resources/json_data.json";
 
 /* 
  * To give the user the weather info he wants we need to get a city name.
@@ -51,10 +51,10 @@ int main(int argc, char *argv[])
     FILE *read_api_key_file;
     FILE *temp_json_file;
 
-    read_api_key_file = fopen(api_key_filename, "r");
+    read_api_key_file = fopen(API_KEY_FILENAME, "r");
 
     if (read_api_key_file == NULL) {
-        fprintf(stderr, "Error: Couldn't open file: %s\n", api_key_filename);
+        fprintf(stderr, "Error: Couldn't open file: %s\n", API_KEY_FILENAME);
         return 1;
     }
 
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
         */
 
         // wb = write binary
-        temp_json_file = fopen(json_filename, "wb+");
+        temp_json_file = fopen(JSON_FILENAME, "wb+");
 
         if (temp_json_file) {
 
@@ -144,10 +144,10 @@ int main(int argc, char *argv[])
      */
 
 
-    temp_json_file = fopen(json_filename, "rb"); 
+    temp_json_file = fopen(JSON_FILENAME, "rb"); 
 
     if (temp_json_file == NULL) {
-        fprintf(stderr, "Error: Couldn't open file: %s\n", json_filename);
+        fprintf(stderr, "Error: Couldn't open file: %s\n", JSON_FILENAME);
         fclose(temp_json_file);
         return 1;
 
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    cJSON *json;
+    buffer[0] = '\0';
 
     /* 
      * claude helped me make the code a bit more efficient and easier to write, 
@@ -185,7 +185,9 @@ int main(int argc, char *argv[])
      *
     */
 
-    while (fread(buffer, file_size , 1, temp_json_file)) {
+    cJSON *json;
+
+    while (fread(buffer, 1, file_size , temp_json_file)) {
         json = cJSON_Parse(buffer);
     }
 
@@ -199,13 +201,13 @@ int main(int argc, char *argv[])
     if (json_string == NULL) {
         fprintf(stderr, "Failed to print json_string: %s.\n", json_string);
         cJSON_Delete(json);
+        return 1;
     }
 
-    const char *error_ptr = cJSON_GetErrorPtr();
-    if (error_ptr != NULL) {
-        fprintf(stderr, "Error before: %s\n", error_ptr);
+    const char *ERROR_PTR = cJSON_GetErrorPtr();
+    if (ERROR_PTR != NULL) {
+        fprintf(stderr, "Error before: %s\n", ERROR_PTR);
     }
-
 
     /* filter the usefull information and display it nicely */
 
@@ -424,16 +426,16 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
 
     // NOTE: wchar_t umlaut has to be a char and cant be a string because the 
     // switch case statement doenst take a string
-    const char *replacement;
+    const char *REPLACEMENT;
 
     switch(umlaut) {
-        case UMLAUT_BIG_A: replacement = "AE"; break;
-        case UMLAUT_BIG_O: replacement = "OE"; break;
-        case UMLAUT_BIG_U: replacement = "UE"; break;
+        case UMLAUT_BIG_A: REPLACEMENT = "AE"; break;
+        case UMLAUT_BIG_O: REPLACEMENT = "OE"; break;
+        case UMLAUT_BIG_U: REPLACEMENT = "UE"; break;
 
-        case UMLAUT_SMALL_A: replacement = "ae"; break;
-        case UMLAUT_SMALL_O: replacement = "oe"; break;
-        case UMLAUT_SMALL_U: replacement = "ue"; break;
+        case UMLAUT_SMALL_A: REPLACEMENT = "ae"; break;
+        case UMLAUT_SMALL_O: REPLACEMENT = "oe"; break;
+        case UMLAUT_SMALL_U: REPLACEMENT = "ue"; break;
 
 
         default : break; 
@@ -448,8 +450,8 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
      * erhöhen dann das value
     */
 
-    dest[(*j)++] = replacement[0];
-    dest[(*j)++] = replacement[1];
+    dest[(*j)++] = REPLACEMENT[0];
+    dest[(*j)++] = REPLACEMENT[1];
 }
 
 
@@ -461,9 +463,10 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
 *   above is my attempt I tried for days but got nowhere. I dont think I wouldve figured
 *   this out I was on the wrong path
 */
-char* transliterate_umlaut(const char* input) {
+char *transliterate_umlaut(const char* input) {
     size_t len = strlen(input);
-    char* output = malloc(len * 2 + 1); // Worst case: every char is an umlaut
+    char *output = malloc(len * 2 + 1); // Worst case: every char is an umlaut
+    // WARN: FREE OUTPUT 
     size_t j = 0;
 
     for (size_t i = 0; i < len; ) {

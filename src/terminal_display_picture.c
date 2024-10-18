@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "../include/cJSON.h"
 #include "../include/terminal_support.h"
@@ -35,116 +36,121 @@ char *get_filename(const char *url)
 }
 
 // https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c
-bool file_exists (char *filename) {
-  struct stat   buffer;   
+bool file_exists (char *filename)
+{
+  struct stat   buffer;
   return (stat (filename, &buffer) == 0);
 }
 
-
 size_t terminal_display_picture(const cJSON *current) 
 {
-    // int result = 0;
-    const cJSON *weather_icons_array_item = NULL;
-    const cJSON *weather_icons_array = NULL;
-    char *filename;
-    char *t_weather_icons_array_item_string;
+    const cJSON *WEATHER_ICONS_ARRAY_ITEM = NULL;
+    const cJSON *WEATHER_ICONS_ARRAY = NULL;
+    char *filename = NULL;
+    char *t_WEATHER_ICONS_ARRAY_ITEM_string = NULL;
     char *supported_image_viewer = "timg";
 
     #if __linux__
 
-        if (get_terminal_emulator_protocol() !=0) {
+        if (get_terminal_emulator_protocol() != 0) {
             fprintf(stdout, "\n*A Picture of the current weather*\r\n");
             fprintf(stdout, "Your terminal emulator doesn't seem to support displaying pictures.\r\n");
             // image_to_ascii();
         }
+	
+        if(current == NULL) {
+            perror("current is NULL, json file damaged");
+            printf("\n");
+            return 1;
+        }
 
-        if(current != NULL) {
-            weather_icons_array = cJSON_GetObjectItemCaseSensitive(current, "weather_icons");
-            if (cJSON_IsArray(weather_icons_array)) {
-                weather_icons_array_item = cJSON_GetArrayItem(weather_icons_array, 0);
-                if (cJSON_IsString(weather_icons_array_item) && (weather_icons_array_item->valuestring != NULL)) {
-                /* This downloades the picture that the api provides */
-                    CURLcode weather_icon_image_result;
+        WEATHER_ICONS_ARRAY = cJSON_GetObjectItemCaseSensitive(current, "weather_icons");
+        if (cJSON_IsArray(WEATHER_ICONS_ARRAY)) {
+            WEATHER_ICONS_ARRAY_ITEM = cJSON_GetArrayItem(WEATHER_ICONS_ARRAY, 0);
+            if (cJSON_IsString(WEATHER_ICONS_ARRAY_ITEM) && (WEATHER_ICONS_ARRAY_ITEM->valuestring != NULL)) {
+            /* This downloades the picture that the api provides */
+                CURLcode weather_icon_image_result = '0';
 
-                    CURL *weather_icon_image;
-                    weather_icon_image = curl_easy_init();
+                CURL *weather_icon_image = NULL;
+                weather_icon_image = curl_easy_init();
 
-                    FILE *fp;
+                FILE *fp = NULL;
 
-                    size_t needed_size_t = strlen(weather_icons_array_item->valuestring) + 1;
-                    t_weather_icons_array_item_string = malloc(needed_size_t);
+                size_t needed_size_t = strlen(WEATHER_ICONS_ARRAY_ITEM->valuestring) + 1;
+                t_WEATHER_ICONS_ARRAY_ITEM_string = malloc(needed_size_t);
 
-                    if (t_weather_icons_array_item_string == NULL) {
-                        fprintf(stderr, "Memory allocation for %s failed %s", t_weather_icons_array_item_string, strerror(errno));
-                    }
-                    strcpy(t_weather_icons_array_item_string, (char *)weather_icons_array_item->valuestring);
-                    char *t_filename = get_filename(t_weather_icons_array_item_string);
+                if (t_WEATHER_ICONS_ARRAY_ITEM_string == NULL) {
+                    fprintf(stderr, "Memory allocation for %s failed %s", t_WEATHER_ICONS_ARRAY_ITEM_string, strerror(errno));
+                }
+                strcpy(t_WEATHER_ICONS_ARRAY_ITEM_string, (char *)WEATHER_ICONS_ARRAY_ITEM->valuestring);
+                char *t_filename = get_filename(t_WEATHER_ICONS_ARRAY_ITEM_string);
 
-                    if (t_filename == NULL) {
-                        fprintf(stderr, "Failed to get filename %s", strerror(errno));
-                        printf("\n");
-                    }
-
-                    // this was my allocation for filename but this is apparently better
-                    // filename = malloc(sizeof(char *) * strlen(t_filename));
-
-                    printf("%s\n", t_filename);
-                    size_t needed_size = snprintf(NULL, 0, "../src/resources/%s", t_filename) + 1;
-                    char *filename = malloc(needed_size);
-
-                    if (filename == NULL) {
-                        fprintf(stderr, "Couldn't allocate enough memory for %s %s", filename, strerror(errno));
-                        printf("\n");
-                    }
-
-                    // TODO: IS the filename checked correctly ?
-
-                    snprintf(filename, needed_size ,"../src/resources/%s", t_filename);
-                    // Check if the file already exists. if no then do this
-                    // https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c/230068#230068
-
-                    if (file_exists(filename) && weather_icon_image) {
-                        printf("File does exist at path: %s\n", filename);
-                        fp = fopen(filename, "wb+");
-                        if (fp == NULL) { 
-                            fprintf(stderr, "Error opening %s: %s", filename, strerror(errno));
-                            printf("\n");
-                            return 1;
-                        }
-
-                        curl_easy_setopt(weather_icon_image, CURLOPT_URL, weather_icons_array_item->valuestring);
-                        curl_easy_setopt(weather_icon_image, CURLOPT_WRITEFUNCTION, NULL);
-                        curl_easy_setopt(weather_icon_image, CURLOPT_WRITEDATA, fp);
-
-                        weather_icon_image_result = curl_easy_perform(weather_icon_image);
-                        if (weather_icon_image_result != 0) {
-                            perror("Cannot download image");
-                            printf("\n");
-                            return 1;
-                        }
-                    }
-                    printf("filename before clean: %s\n", filename);
-                    curl_easy_cleanup(weather_icon_image);
-                    fclose(fp);
-                } else {
-                    fprintf(stderr, "weather_icons_array_item. %s", strerror(errno));
+                if (t_filename == NULL) {
+                    fprintf(stderr, "Failed to get filename %s", strerror(errno));
                     printf("\n");
                 }
+
+                // this was my allocation for filename but this is apparently better
+                // filename = malloc(sizeof(char *) * strlen(t_filename));
+
+                printf("%s\n", t_filename);
+                size_t needed_size = snprintf(NULL, 0, "../src/resources/%s", t_filename) + 1;
+                char *filename = malloc(needed_size);
+
+                if (filename == NULL) {
+                    fprintf(stderr, "Couldn't allocate enough memory for %s %s", filename, strerror(errno));
+                    printf("\n");
+                }
+
+                // TODO: IS the filename checked correctly ?
+
+                snprintf(filename, needed_size ,"../src/resources/%s", t_filename);
+                // Check if the file already exists. if no then do this
+                // https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c/230068#230068
+
+                if (file_exists(filename) && weather_icon_image) {
+                    printf("File does exist at path: %s\n", filename);
+                    fp = fopen(filename, "wb+");
+                    if (fp == NULL) { 
+                        fprintf(stderr, "Error opening %s: %s", filename, strerror(errno));
+                        printf("\n");
+                        return 1;
+                    }
+
+                    curl_easy_setopt(weather_icon_image, CURLOPT_URL, WEATHER_ICONS_ARRAY_ITEM->valuestring);
+                    curl_easy_setopt(weather_icon_image, CURLOPT_WRITEFUNCTION, NULL);
+                    curl_easy_setopt(weather_icon_image, CURLOPT_WRITEDATA, fp);
+
+                    weather_icon_image_result = curl_easy_perform(weather_icon_image);
+                    if (weather_icon_image_result != 0) {
+                        perror("Cannot download image");
+                        printf("\n");
+                        return 1;
+                    }
+                }
+                printf("filename before clean: %s\n", filename);
+                printf("filename address %p\n", (void *)filename);
+                fflush(stderr);
+                curl_easy_cleanup(weather_icon_image);
+                fclose(fp);
+            } else {
+                fprintf(stderr, "WEATHER_ICONS_ARRAY_ITEM. %s", strerror(errno));
+                printf("\n");
             }
         }
 
     FILE *user_command;
     // CAN FIX MAGIC NUMBERS ?
-    char path[1024];
-    char tmp_check[1024];
+    char path[2048] = {"NULL"};
+    char tmp_check[2048] = {"NULL"};
 
+    printf("filename address %p\n", (void *)filename);
     fflush(stdout);
     if (filename == NULL) {
-        printf("filename is NULL before check\n");
+        fprintf(stdout, "filename is NULL before check\n");
     } else {
-        printf("filename before check: %s \n", filename);
+        fprintf(stdout, "filename before check: %s \n", filename);
     }
-    fflush(stdout);
 
     snprintf(tmp_check, sizeof(tmp_check), "%s %s > /dev/null 2>&1", supported_image_viewer , filename);
     long user_image_check = system(tmp_check);
@@ -155,7 +161,7 @@ size_t terminal_display_picture(const cJSON *current)
     }
 
     // TODO: MAKE FLEXIBLE
-    char tmp_test[1024];
+    char tmp_test[2048] = {"NULL"};
     snprintf(tmp_test, sizeof(tmp_test), "%s -b auto %s", supported_image_viewer ,filename);
     user_command = popen(tmp_test, "r");
     if (user_command == NULL) {
@@ -192,7 +198,7 @@ size_t terminal_display_picture(const cJSON *current)
     }
 
     free(filename);
-    free(t_weather_icons_array_item_string);
+    free(t_WEATHER_ICONS_ARRAY_ITEM_string);
 
 
 
@@ -212,9 +218,9 @@ size_t terminal_display_picture(const cJSON *current)
             if(current != NULL) {
                 weather_icons_array = cJSON_GetObjectItemCaseSensitive(current, "weather_icons");
                 if (cJSON_IsArray(weather_icons_array)) {
-                    weather_icons_array_item = cJSON_GetArrayItem(weather_icons_array, 0);
-                    if (cJSON_IsString(weather_icons_array_item) && (weather_icons_array_item->valuestring != NULL)) {
-                        // snprintf(command, sizeof(command), "%s %s", user_image_viewer, weather_icons_array_item->valuestring);
+                    WEATHER_ICONS_ARRAY_ITEM = cJSON_GetArrayItem(weather_icons_array, 0);
+                    if (cJSON_IsString(WEATHER_ICONS_ARRAY_ITEM) && (WEATHER_ICONS_ARRAY_ITEM->valuestring != NULL)) {
+                        // snprintf(command, sizeof(command), "%s %s", user_image_viewer, WEATHER_ICONS_ARRAY_ITEM->valuestring);
                         // result = system(command);
                         result = -1;
                     }

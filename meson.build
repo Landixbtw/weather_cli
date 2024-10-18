@@ -1,5 +1,12 @@
 # You can change the name of the cli by replacing 'main' with 'your desired name'
-project('main', 'c', version: '0.1')
+project('main', 'c', version: '0.1', 
+default_options: [
+    'warning_level=3',
+    'debug=true',
+    'optimization=plain',
+    'b_sanitize=address',
+    'c_std=11',
+  ])
 
 # caca_deps = [dependency('caca')]
 curL_deps = [dependency('libcurl')]
@@ -52,7 +59,7 @@ copy_resources = run_command('test', '-d', src_resources, check: false).returnco
 
 # Create the executable for the main project (weather_cli)
 executable(
-  meson.project_name(), 
+  meson.project_name(),
   ['src/main.c', 'src/terminal_support.c', 'src/cJSON.c', 'src/image_to_ascii.c', 'src/terminal_display_picture.c'],
   dependencies: [curL_deps],
   include_directories: inc_dir,
