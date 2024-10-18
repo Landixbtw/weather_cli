@@ -3,18 +3,18 @@ project('main', 'c', version: '0.1',
 default_options: [
     'warning_level=3',
     'debug=true',
-    'optimization=plain',
-    'b_sanitize=address',
-    'c_std=11',
+    'optimization=3',
+    'b_sanitize=none',
+    'c_std=gnu11',
+
   ])
 
-# caca_deps = [dependency('caca')]
 curL_deps = [dependency('libcurl')]
 
 inc_dir = include_directories('include')
 
 lib = library('cJSON', 'src/cJSON.c')
-
+ 
 # Define the source and destination paths for img2ascii
 img2ascii_source_dir = join_paths(meson.source_root(), 'img2ascii')
 img2ascii_build_dir = join_paths(meson.build_root(), 'img2ascii')

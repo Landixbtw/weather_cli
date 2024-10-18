@@ -93,9 +93,9 @@ size_t terminal_display_picture(const cJSON *current)
                 // this was my allocation for filename but this is apparently better
                 // filename = malloc(sizeof(char *) * strlen(t_filename));
 
-                printf("%s\n", t_filename);
+                // printf("%s\n", t_filename);
                 size_t needed_size = snprintf(NULL, 0, "../src/resources/%s", t_filename) + 1;
-                char *filename = malloc(needed_size);
+                filename = malloc(needed_size);
 
                 if (filename == NULL) {
                     fprintf(stderr, "Couldn't allocate enough memory for %s %s", filename, strerror(errno));
@@ -109,7 +109,7 @@ size_t terminal_display_picture(const cJSON *current)
                 // https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c/230068#230068
 
                 if (file_exists(filename) && weather_icon_image) {
-                    printf("File does exist at path: %s\n", filename);
+                    // printf("File does exist at path: %s\n", filename);
                     fp = fopen(filename, "wb+");
                     if (fp == NULL) { 
                         fprintf(stderr, "Error opening %s: %s", filename, strerror(errno));
@@ -128,8 +128,6 @@ size_t terminal_display_picture(const cJSON *current)
                         return 1;
                     }
                 }
-                printf("filename before clean: %s\n", filename);
-                printf("filename address %p\n", (void *)filename);
                 fflush(stderr);
                 curl_easy_cleanup(weather_icon_image);
                 fclose(fp);
@@ -140,23 +138,18 @@ size_t terminal_display_picture(const cJSON *current)
         }
 
     FILE *user_command;
-    // CAN FIX MAGIC NUMBERS ?
     char path[2048] = {"NULL"};
     char tmp_check[2048] = {"NULL"};
 
-    printf("filename address %p\n", (void *)filename);
-    fflush(stdout);
     if (filename == NULL) {
         fprintf(stdout, "filename is NULL before check\n");
-    } else {
-        fprintf(stdout, "filename before check: %s \n", filename);
-    }
+    } 
 
     snprintf(tmp_check, sizeof(tmp_check), "%s %s > /dev/null 2>&1", supported_image_viewer , filename);
     long user_image_check = system(tmp_check);
     if (user_image_check != 0) {
         perror("Couldn't open picture! Check failed");
-        fprintf(stderr, "\n%s %s > /dev/null 2>&1 returned %ld\n", supported_image_viewer, filename, user_image_check);
+        // fprintf(stderr, "\n%s %s > /dev/null 2>&1 returned %ld\n", supported_image_viewer, filename, user_image_check);
         return 1;
     }
 
