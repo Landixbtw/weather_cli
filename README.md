@@ -54,7 +54,8 @@ Altough the error message might say different, use the format that is here CORRE
 
 ## Building the binary
 
-Building is as easy as.  
+Before building, you need to add your API key, to the ```WEATHERSTACK_API_KEY.env``` file.  
+You have to create it in ```src/resources/```. Then building is as easy as.  
 ```sh
 meson setup builddir
 
@@ -71,7 +72,6 @@ Linux tux 6.11.3-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
 
 ## Installing the cli
 > [!IMPORTANT]
-> This is not ready to be installed, if you absolutly know what you are doing you can.
 > I DO NOT RECOMMEND IT. AND I WILL NOT HELP TROUBLESHOOT.
 
 If you want to install the cli to your machine to be able to use it everywhere 
@@ -91,7 +91,6 @@ executable(
  --> install_dir: 'your/destination/path' <--
 )
 ```
-
 ```sh
 meson install
 ```
@@ -99,7 +98,6 @@ meson install
 This will install the cli to the default path. You can also set a custom path.
 
 If you want to read more about meson install you can read here [here](https://mesonbuild.com/Installing.html).
-
 
 ##  Using the weather cli
 
@@ -144,8 +142,8 @@ api_success = cJSON_GetObjectItemCaseSensitive(json, "success");
 	}
 ```
 
-The "json" is a cJSON pointer (```cJSON *json```) that has the content of the json_data.json file that we received. 
-That is stored in a file called temp_json_file that temporarily hold the content.
+The "json" is a cJSON pointer (```cJSON *json```) that has the content of the json\_data.json file that we received. 
+That is stored in a file called temp\_json\_file that temporarily hold the content.
 
 ```c
 while (fread(buffer, file_size , 1, temp_json_file)) {
