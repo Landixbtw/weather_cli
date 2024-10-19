@@ -193,7 +193,8 @@ size_t terminal_display_picture(const cJSON *current)
     free(filename);
     free(t_WEATHER_ICONS_ARRAY_ITEM_string);
 
-
+    filename = NULL;
+    t_WEATHER_ICONS_ARRAY_ITEM_string = NULL;
 
     #endif 
 

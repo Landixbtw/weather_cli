@@ -1,12 +1,11 @@
 # You can change the name of the cli by replacing 'main' with 'your desired name'
-project('main', 'c', version: '0.1', 
+project('weather_cli', 'c', version: '1', 
 default_options: [
     'warning_level=3',
     'debug=true',
     'optimization=3',
-    'b_sanitize=none',
+    'b_sanitize=address',
     'c_std=gnu11',
-
   ])
 
 curL_deps = [dependency('libcurl')]
@@ -65,7 +64,6 @@ executable(
   include_directories: inc_dir,
   link_with: lib,
   build_by_default: true,
-  # install: true
+  #install: true
   # install_dir: 'your/destination/path'
 )
-

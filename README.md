@@ -70,10 +70,14 @@ Linux tux 6.11.3-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
 ```
 
 ## Installing the cli
+> [!IMPORTANT]
+> This is not ready to be installed, if you absolutly know what you are doing you can.
+> I DO NOT RECOMMEND IT. AND I WILL NOT HELP TROUBLESHOOT.
+
 If you want to install the cli to your machine to be able to use it everywhere 
 and not just in the build directory. You can also set a custom path to install the programm. 
 If you so, I will not be able help you troubleshoot.
-You can uncomment the following line in the meson.build file.
+You can uncomment the following line in the ```meson.build``` file.
 
 ```build
 executable(
@@ -88,8 +92,14 @@ executable(
 )
 ```
 
+```sh
+meson install
+```
+
 This will install the cli to the default path. You can also set a custom path.
+
 If you want to read more about meson install you can read here [here](https://mesonbuild.com/Installing.html).
+
 
 ##  Using the weather cli
 

@@ -69,9 +69,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    char *url_string = NULL;
     /* This gives us the user input */
     if(argc == 2) { 
+        char *url_string = NULL;
         char *transliterated = NULL;
 
         url_string = argv[1];
@@ -79,6 +79,10 @@ int main(int argc, char *argv[])
 
         build_url(url_string);
         free(transliterated);
+        free(url_string);
+
+        transliterated = NULL;
+        url_string = NULL;
     } else {
         show_usage(PROGRAM_NAME);
         fclose(read_api_key_file);
@@ -163,6 +167,7 @@ int main(int argc, char *argv[])
 
 
     // get a buffer, that is as big as the file.
+    /* FIX: Unitializsed value was created by  heap allocation at xxx: malloc main.c 169*/
     char *buffer = malloc(file_size + 1);
     if (buffer == NULL) {
         fprintf(stderr, "Couldn't allocate enough memory %s", strerror(errno));
@@ -171,13 +176,19 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    buffer[0] = '\0';
-
+    /*
+     * memset is needed when:
+     * You need to initialize the actual memory that was allocated 
+     * You want to ensure no garbage/sensitive data remains in the memory 
+     * You need to set all bytes to a specific valueint
+     *
+    */ 
+    memset(buffer, 0, file_size + 1);
     /* 
      * claude helped me make the code a bit more efficient and easier to write, 
      *
-     * using file_size and not size_of(file_size) here is important, so as to not the 
-     * size of the long file_size but the actuall file_size
+     * using file_size and not size_of(file_size) here is important, so as to 
+     * not get the size of the long file_size but the actuall file_size
      *
      * " Using sizeof(file_size) might not give you what you expect. Remember, 
      * file_size is likely a long type, so sizeof(file_size) would give you the 
@@ -185,7 +196,7 @@ int main(int argc, char *argv[])
      *
     */
 
-    cJSON *json;
+    cJSON *json = NULL;
 
     while (fread(buffer, 1, file_size , temp_json_file)) {
         json = cJSON_Parse(buffer);
@@ -195,6 +206,8 @@ int main(int argc, char *argv[])
         fprintf(stderr, "cJSON json is NULL.\n");
         cJSON_Delete(json);
     }
+
+
 
     char *json_string = cJSON_Print(json);
 
@@ -337,6 +350,8 @@ int main(int argc, char *argv[])
     free(json_string);
     cJSON_Delete(json);
 
+    buffer = NULL;
+    json_string = NULL;
     return 0;
 }
 
@@ -413,7 +428,7 @@ char *filter_char(const wchar_t input, size_t output_size) {
         case UMLAUT_SMALL_A : replace_umlaute(output, input, &j);
         case UMLAUT_SMALL_O : replace_umlaute(output, input, &j);
         case UMLAUT_SMALL_U : replace_umlaute(output, input, &j);
-        default : break ;
+        default : break;
     }
     return output;
 }
@@ -441,10 +456,6 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
         default : break; 
     }
 
-    printf("-------------------\n");
-    printf("UMLAUT_BIG_A: %i", UMLAUT_BIG_A);
-
-
     /* Die Klammern sind wichtig denn ohne die Klammern würden wir den 
      * Pointer erhöhen und nicht das value jetzt dereferencen wir und 
      * erhöhen dann das value
@@ -465,8 +476,8 @@ void replace_umlaute(char *dest, wchar_t umlaut, size_t *j) {
 */
 char *transliterate_umlaut(const char* input) {
     size_t len = strlen(input);
-    char *output = malloc(len * 2 + 1); // Worst case: every char is an umlaut
-    // WARN: FREE OUTPUT 
+    // Worst case: every char is an umlaut
+    char *output = malloc(len * 2 + 1); 
     size_t j = 0;
 
     for (size_t i = 0; i < len; ) {
