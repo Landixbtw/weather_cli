@@ -1,6 +1,5 @@
 *.env
 *.o
-# *.png
 *.json
 builddir/
 build/

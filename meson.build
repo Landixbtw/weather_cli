@@ -4,7 +4,7 @@ default_options: [
     'warning_level=3',
     'debug=true',
     'optimization=3',
-    'b_sanitize=address',
+    # 'b_sanitize=address',
     'c_std=gnu11',
   ])
 

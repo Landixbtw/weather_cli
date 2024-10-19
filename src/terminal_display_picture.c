@@ -61,7 +61,7 @@ size_t terminal_display_picture(const cJSON *current)
         if(current == NULL) {
             perror("current is NULL, json file damaged");
             printf("\n");
-            return 1;
+            exit(1);
         }
 
         WEATHER_ICONS_ARRAY = cJSON_GetObjectItemCaseSensitive(current, "weather_icons");

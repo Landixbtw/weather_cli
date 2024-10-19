@@ -1,13 +1,21 @@
 # Weather cli
-!! Rewrite this !!
 
-This is my 3rd attempt at a final project, and I think I found the balance this time, between having fun but it also not being too hard.
-my first attempt was trying to write a small operating system with c. But once I figured out that in freestanding I would have to implement libc myself, I put that project on hold.
-I was / am pretty sure I would not have been able to make something working / something that I could present in about 7 months. So I set my eye on making a small game with raylib and c. Sadly this burned when I was 70% finished since apprently playing games is just more fun then making them... 
-I kinda wanted to do something that seemed simple in e.g python, but would still be a challenge in c. And since curl is a library that you encounter often, for example when downloading something. I had the idea to make this cli.
+https://cs50.harvard.edu/x/2024/project/
+/*
+*   Video Demo: <yt url>
+*       3min video maybe pp / and live demo
+<!-- *   Description of the project -->
+<!-- *   Talk about all the files, and what they, do  -->
+*   Did I debate certain design choices, why did I make them
+*/
+
+This command line tool is actually my third attempt at a final project for cs50x 2024. My first attempt was trying to create a small operating system, but it got clear quite fast 
+that this was way out of scope for me. Altough this is not my final project, I will probably pick this up again when I know c better. Between working this low level and 
+implementing my own libc this would have been too hard, and taken too much time. My second attempt for a final project was remaking spaceinvaders with c and raylib. 
+But there where I had some big issues and I could not get around them, even after weeks of trying. Finally I had the idea for this weather_cli, it seemed hard enough but definitly 
+possible to do in time.
 
 ## Dependencies
-
 ### Curl
 You need [curl](https://curl.se) you can either [download](https://curl.se/download.html) it from the official website, or the build system ([meson](https://mesonbuild.com/index.html)) will download it for you since libcurl has a [meson wrapDB package](https://mesonbuild.com/Wrapdb-projects.html).
 
@@ -53,9 +61,7 @@ Also use the correct format. ↓
 Altough the error message might say different, use the format that is here CORRECT.
 
 ## Building the binary
-
-Before building, you need to add your API key, to the ```WEATHERSTACK_API_KEY.env``` file.  
-You have to create it in ```src/resources/```. Then building is as easy as.  
+Building is as easy as.  
 ```sh
 meson setup builddir
 
@@ -120,7 +126,8 @@ Example: ./weather_cli New+York
 
 ## How it works
 
-The programm uses curl to make the api requests, to the weatherstack api. 
+The ```src/main.c``` file handles thing like the input, building the url, "transforming" the umlaute.
+the programm uses curl to make the api requests, to the weatherstack api.
 It receives a json_data.json file, that is then being parsed by the cJSON library. 
 The json data is then being split into the information that we want to display on the command line.
 
@@ -151,12 +158,35 @@ while (fread(buffer, file_size , 1, temp_json_file)) {
 }
 ```
 
+## Converting characters
+
+I am German, and in the german language there are so called "[umlaute](https://en.wikipedia.org/wiki/Umlaut_%28linguistics%29)" these are letters with the small dots over them ö ä ü. Some city names most notably München have these. I had to discover that the weatherstack API does not support these umlaute. 
+So I thought about how I can detect them and convert them to oe ae ue, which means the same but is a format that the weatherstack api can read and process.
+So München becomes Muenchen. I tried over days, with many different approaches, but could not figure out. You can still find my inital
+attempts on trying to convert the characters, at the bottom of the ```main.c``` file. Eventually I caved and asked [claude.ai](https://www.claude.ai/new). 
+
+- Files in the project what do they do 
+
+The ```src/main.c``` file, handles the user input, taking the city name, passing it to the 'transliterate_umlaut' function, to change [umlaute](https://en.wikipedia.org/wiki/Umlaut_%28linguistics%29), into something the weatherstack api can read.
+The user input  
+The api request for displaying information like the city, temperature, windspeed, humidity, ...  
+The building of the url with the build_url() function, putting together the city for the request, and the api key.  
+Transforming ö ä ü into oe ae ue  
+
 ## Getting and downloading the weather picture
 
 The API this is all built on is the [weatherstack API](https://www.weatherstack.com).
 It provides us with all the information needed, and even provides a link to a picture.
 The picture that is being displayed / downloaded, is dependant on the weather of the 
 city we are trying to look up. The picture is then being downloaded with curl.
+
+
+## Displaying the picture on the command line
+
+Displaying the image on the command line is as easy as checking if the user has one of the 
+"supported" terminal image viewers installed on their system and executing a command.
+With ```popen()``` we can pipe the output directly onto the terminal. 
+
 
 ## Determining the terminal emulator protocol
 
@@ -178,26 +208,6 @@ Some would be:
 - [kitty](https://sw.kovidgoyal.net/kitty/)
 
 
-## Displaying the picture on the command line
-
-Displaying the image on the command line is as easy as checking if the user has one of the 
-"supported" terminal image viewers installed on their system and executing a command.
-With ```popen()``` we can pipe the output directly onto the terminal. 
-
-//
-## Converting the png to ascii 
-
-image to ascii how why what  
-// 
-
-## Converting characters
-
-I am German, and in the german language there are so called "umlaute" these are the letters with the small points over them ö ä ü. Some city names most notably München.
-I had to discover that the weatherstack API does not support these umlaute. So I thought about how I can detect them and convert them to oe ae ue, 
-which means the same but is just displayed differently. So München -> Muenchen. I tried over days, but could not figure out. You can still find my inital
-attempts on trying to convert the characters, at the bottom of the ```main.c``` file. Eventually I caved and asked [claude.ai](https://www.claude.ai/new). 
-I was "ok far" off from the correct solution, but I just could not figure it out.
-
 
 
 TODO:
@@ -208,3 +218,7 @@ TODO:
 - Maybe find a way to actually cache the pictures, shouldn't be that much since you would only look up the places around you 
 - Make more code comments ?
 - https://stackoverflow.com/questions/5134891/how-do-i-use-valgrind-to-find-memory-leaks
+- If not weatherstack api key file detected, ask user for api key, and make file echo the key, into the file
+
+
+

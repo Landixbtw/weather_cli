@@ -89,7 +89,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // FIX: Error handling for cities that dont exist / and or partial city names ? Api just autocompletes to some random city
 
     /*
      * we first need to make a call to the weatherstack api to get the json data
@@ -315,7 +314,8 @@ int main(int argc, char *argv[])
 
         weather_descriptions = cJSON_GetObjectItemCaseSensitive(current, "weather_descriptions");
 
-        /* to print the part of the array, we first need to index, since there 
+        /* 
+         * to print the part of the array, we first need to index, since there 
          * is only ever one entry in the array we can alway index to 0 
         */
 
