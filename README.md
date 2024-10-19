@@ -1,13 +1,13 @@
-# Weather cli
+# 🎯 Weather cli
 
-https://cs50.harvard.edu/x/2024/project/
-/*
+https://cs50.harvard.edu/x/2024/project/  
+/*  
 *   Video Demo: <yt url>
 *       3min video maybe pp / and live demo
 <!-- *   Description of the project -->
 <!-- *   Talk about all the files, and what they, do  -->
 *   Did I debate certain design choices, why did I make them
-*/
+*/  
 
 This command line tool is actually my third attempt at a final project for cs50x 2024. My first attempt was trying to create a small operating system, but it got clear quite fast
 that this was way out of scope for me. Altough this is not my final project, I will probably pick this up again when I know c better. Between working this low level and
@@ -60,7 +60,8 @@ Also use the correct format. ↓
 
 Altough the error message might say different, use the format that is here CORRECT.
 
-## Building the binary
+## 🚀 Getting Started
+###  Building the binary
 Building is as easy as.
 ```sh
 meson setup builddir
