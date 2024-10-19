@@ -183,6 +183,7 @@ int main(int argc, char *argv[])
      *
     */ 
     memset(buffer, 0, file_size + 1);
+
     /* 
      * claude helped me make the code a bit more efficient and easier to write, 
      *

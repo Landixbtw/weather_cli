@@ -108,7 +108,7 @@ size_t terminal_display_picture(const cJSON *current)
                 // Check if the file already exists. if no then do this
                 // https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c/230068#230068
 
-                if (file_exists(filename) && weather_icon_image) {
+                if (!file_exists(filename) && weather_icon_image) {
                     // printf("File does exist at path: %s\n", filename);
                     fp = fopen(filename, "wb+");
                     if (fp == NULL) { 
