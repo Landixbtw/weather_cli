@@ -13,34 +13,12 @@
 #include "../include/image_to_ascii.h"
 
 
-//https://curl.se/libcurl/c/CURLOPT_HEADERFUNCTION.html
-static size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata)
-{
-  return nitems * size;
-}
+static size_t header_callback(  char *buffer, size_t size, size_t nitems, 
+                                void *userdata);
 
-char *get_filename(const char *url)
-{
-    // find the last occurence of "/" in the url. with strrchr()
-    char *filename = strrchr(url, '/');
-    /* If filename is NULL there was no slash found in the url */
-    if (filename == NULL) {
-        return NULL;
-    }
-    // https://stackoverflow.com/questions/4295754/how-to-remove-first-character-from-c-string
-    if (filename[0] == '/') {
-        /* copy n bytes from memory area src to memory area dest */
-        memmove(/*dest*/ filename, /*src*/filename+1, /*size*/strlen(filename));
-    }
-    return filename;
-}
+char *get_filename(const char *url);
 
-// https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c
-bool file_exists (char *filename)
-{
-  struct stat   buffer;
-  return (stat (filename, &buffer) == 0);
-}
+bool file_exists (char *filename);
 
 size_t terminal_display_picture(const cJSON *current) 
 {
@@ -80,7 +58,8 @@ size_t terminal_display_picture(const cJSON *current)
                 t_WEATHER_ICONS_ARRAY_ITEM_string = malloc(needed_size_t);
 
                 if (t_WEATHER_ICONS_ARRAY_ITEM_string == NULL) {
-                    fprintf(stderr, "Memory allocation for %s failed %s", t_WEATHER_ICONS_ARRAY_ITEM_string, strerror(errno));
+                    fprintf(stderr, "Memory allocation for %s failed %s", 
+                            t_WEATHER_ICONS_ARRAY_ITEM_string, strerror(errno));
                 }
                 strcpy(t_WEATHER_ICONS_ARRAY_ITEM_string, (char *)WEATHER_ICONS_ARRAY_ITEM->valuestring);
                 char *t_filename = get_filename(t_WEATHER_ICONS_ARRAY_ITEM_string);
@@ -233,3 +212,36 @@ size_t terminal_display_picture(const cJSON *current)
 
 return 0;
 }
+
+
+//https://curl.se/libcurl/c/CURLOPT_HEADERFUNCTION.html
+static size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata)
+{
+  return nitems * size;
+}
+
+
+char *get_filename(const char *url)
+{
+    // find the last occurence of "/" in the url. with strrchr()
+    char *filename = strrchr(url, '/');
+    /* If filename is NULL there was no slash found in the url */
+    if (filename == NULL) {
+        return NULL;
+    }
+    // https://stackoverflow.com/questions/4295754/how-to-remove-first-character-from-c-string
+    if (filename[0] == '/') {
+        /* copy n bytes from memory area src to memory area dest */
+        memmove(/*dest*/ filename, /*src*/filename+1, /*size*/strlen(filename));
+    }
+    return filename;
+}
+
+// https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c
+bool file_exists (char *filename)
+{
+  struct stat   buffer;
+  return (stat (filename, &buffer) == 0);
+}
+
+
