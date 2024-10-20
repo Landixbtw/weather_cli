@@ -6,7 +6,7 @@
 </h1>
 <!-- https://cs50.harvard.edu/x/2024/project/ --> 
 
-Video Demo of the project: 
+Video Demo of the project: https://youtu.be/FPyX3rfdXyc
 
 My final project is a command-line interface tool that allows the user to display the current weather conditions, and other information about a given city. The "weather_cli" sends
 an API request and parses the content that is returned, to then display the output. This command line tool is actually my third attempt at a final project for cs50x 2024. 
