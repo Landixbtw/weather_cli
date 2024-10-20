@@ -4,12 +4,14 @@
 
 Video Demo of the project: 
 
-My final project is a command-line interface tool that allows the user to display the current weather conditions, and other information about a given city. The "weather_cli" send 
-a API and parses this, to then display the output. This command line tool is actually my third attempt at a final project for cs50x 2024. My first attempt was trying to create a 
-small operating system called [BridgeOS](https://github.com/Landixbtw/BridgeOS), but it got clear quite fast that this was way out of scope for me. Altough this is not my final 
+My final project is a command-line interface tool that allows the user to display the current weather conditions, and other information about a given city. The "weather_cli" sends
+an API request and parses the content that is returned, to then display the output. This command line tool is actually my third attempt at a final project for cs50x 2024. 
+
+My first attempt was trying to create a 
+small operating system called [BridgeOS](https://github.com/Landixbtw/BridgeOS), but it got clear quite fast that this was way out of scope for me. Although this is not my final 
 project, I will probably pick this up again when I know c better. Between working this low level and implementing my own libc this would have been too hard, and taken too much time. 
-My second attempt for a final project was remaking spaceinvaders with c and raylib. But there where I had some big issues and I could not get around them, even after weeks of trying. 
-Finally I had the idea for this weather_cli, it seemed hard enough but definitly possible to do in time.
+My second attempt for a final project was remaking spaceinvaders with c and raylib. But there were some big issues and I could not get around them, even after weeks of trying. 
+Finally I had the idea for this weather_cli, it seemed hard enough but definitely possible to do in time.
 
 ## 🔗 Dependencies
 #### Curl
@@ -27,7 +29,7 @@ The [cJSON](https://github.com/DaveGamble/cJSON?tab=MIT-1-ov-file#readme) librar
 
 > [!NOTE]
 > THERE IS NO MAC SUPPORT CURRENTLY I DONT THINK THIS WORKS FOR MAC RIGHT NOW.
-#### MacOs
+#### macOS
 ```zsh
 brew install pkg-config
 brew install ninja
@@ -58,7 +60,7 @@ Also use the correct format. ↓
 mkdir -p src/resources
 echo "your_access_key" > src/resources/WEATHERSTACK_API_KEY.env
 ```
-Altough the error message might say different, use the format that is here CORRECT.
+Although the error message might say different, use the format that is here CORRECT.
 
 ## 🚀 Getting Started
 ###  Building the binary
@@ -78,7 +80,7 @@ Linux tux 6.10.10-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
 Linux tux 6.11.3-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
 ```
 
-**For MacOS** you might have to add a sudo before the compile command.
+**For macOS** you might have to add a sudo before the compile command.
 
 <!-- ### Installing the cli -->
 <!-- > [!IMPORTANT] -->
@@ -110,7 +112,7 @@ Linux tux 6.11.3-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
 <!---->
 ##  Using the weather cli
 
-After building the programm, you can just execute ./weather_cli
+After building the program, you can just execute ./weather_cli
 with no options to get a usage screen. That looks something like this.
 
 ```
@@ -127,18 +129,18 @@ New+York or new+york.
 ```
 
 > [!Important]
-> On MacOS you might need to execute both commands with sudo.  
+> On macOS you might need to execute both commands with sudo.  
 > sudo ./weather_cli Berlin.
 > If you run the commands without sudo the .json and .png files might not be created.
 
 ## How it works
 
 The ```src/main.c``` file handles, taking the user input, building the url with the [build_url()](https://github.com/Landixbtw/weather_cli/blob/main/src/main.c) function, with the city, and API key. It also handles the "umlaute" if the city name 
-has them (For example München -> Muenchen). The weatherstack cannot handle the umlaute so this is necesarry.
+has them (For example München -> Muenchen). The weatherstack cannot handle the umlaute so this is necessary.
 It takes the json data it gets to from the api and writes it into a json file so that it can be read and displayed to the console with the help of [cJSON](https://github.com/DaveGamble/cJSON). 
 It does all the parsing and checking of the json data.
 
-We first have to parse the json file with the [cJSON_Parse](https://github.com/DaveGamble/cJSON/blob/master/cJSON.c#L1195) function, to then be able to disect it with the cJSON library, to display the parts we want. We read the json file with all the data, into a buffer and then into the function.
+We first have to parse the json file with the [cJSON_Parse](https://github.com/DaveGamble/cJSON/blob/master/cJSON.c#L1195) function, to then be able to dissect it with the cJSON library, to display the parts we want. We read the json file with all the data, into a buffer and then into the function.
 ```c
 while (fread(buffer, file_size , 1, temp_json_file)) {
     json = cJSON_Parse(buffer);
@@ -166,21 +168,21 @@ if this is a string, and the valuestring is not NULL we display it on the termin
 
 ## Converting characters
 
-I am German, and in the german language there are so called "[umlaute](https://en.wikipedia.org/wiki/Umlaut_%28linguistics%29)" these are letters with the small dots over them ö ä ü. Some city names most notably München have these. I had to discover that the weatherstack API does not support these umlaute.
+I am German, and in the German language there are so called "[umlaute](https://en.wikipedia.org/wiki/Umlaut_%28linguistics%29)" these are letters with the small dots over them ö ä ü. Some city names most notably München have these. I had to discover that the weatherstack API does not support these umlaute.
 So I thought about how I can detect them and convert them to oe ae ue, which means the same but is a format that the weatherstack api can read and process.
 
 The [transliterate_umlaut]() function just checks for the first four bytes which are always the same, in this case "0xC3", if they match the next four are checked. 
-they are then replaced with ae for ä ue for ü and oe for ö.
-München -> Muenchen
-Köln -> Koeln
-Märkrisch Buchholz -> Maerkrisch Buchholz
+They are then replaced with ae for ä ue for ü and oe for ö.  
+München -> Muenchen  
+Köln -> Koeln  
+Märkisch Buchholz -> Maerkisch Buchholz  
 
 This is the [UTF8-Character chart](https://www.utf8-zeichentabelle.de/unicode-utf8-table.pl?start=128&utf8=0x)
 
 ## Getting and downloading the weather picture  <!-- (terminal_display_picture.c) -->
 
 The API provides a direct link to a png, that we download with curl. I implemented a system that checks if the png already exists,
-if it does the programm displays the picture that is already on your machine, this is possible because the pictures get the same names everytime. 
+if it does the program displays the picture that is already on your machine, this is possible because the pictures get the same names every time. 
 With the [get_filename()](https://github.com/Landixbtw/weather_cli/blob/main/src/terminal_display_picture.c#L241) function we take the url to the picture and deleting everything before 
 the last /. This then gives us /filename.png, 
 we then delete the / and there we have the filename. The [file_exists()](https://github.com/Landixbtw/weather_cli/blob/main/src/terminal_display_picture.c#L241)
@@ -216,9 +218,9 @@ If you want to know more about this topic there is a post on [unix.stackexchange
 the topic.
 ### 🖌️ Design Choices
 
-The only design choice I really had was, were to put the image, if displayed. It used to be at the right, next to the text. But there was no good way of determining the string 
+The only design choice I really had was, where to put the image, if displayed. It used to be at the right, next to the text. But there was no good way of determining the string 
 length, of the output and still displaying the picture where I wanted it, since the text that was too long was in the bottom third of the picture and I could not get the string 
-length and make the adjustement to the image placement. It does look good at the top, but the problem is that it takes forever to load / download. I might get some multithreading 
+length and make the adjustment to the image placement. It does look good at the top, but the problem is that it takes forever to load / download. I might get some multithreading 
 going and drawing the picture piece by piece. 
 
 
