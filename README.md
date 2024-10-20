@@ -4,7 +4,6 @@
         🌥️Weather cli 
     </p>
 </h1>
-<!-- # <center> 🌥️Weather cli </center> -->
 <!-- https://cs50.harvard.edu/x/2024/project/ --> 
 
 Video Demo of the project: 
@@ -65,7 +64,6 @@ Also use the correct format. ↓
 mkdir -p src/resources
 echo "your_access_key" > src/resources/WEATHERSTACK_API_KEY.env
 ```
-Although the error message might say different, use the format that is here CORRECT.
 
 ## 🚀 Getting Started
 ###  Building the binary

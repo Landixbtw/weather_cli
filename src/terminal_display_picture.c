@@ -87,8 +87,8 @@ size_t terminal_display_picture(const cJSON *current)
                 // Check if the file already exists. if no then do this
                 // https://stackoverflow.com/questions/230062/whats-the-best-way-to-check-if-a-file-exists-in-c/230068#230068
 
+
                 if (!file_exists(filename) && weather_icon_image) {
-                    // printf("File does exist at path: %s\n", filename);
                     fp = fopen(filename, "wb+");
                     if (fp == NULL) { 
                         fprintf(stderr, "Error opening %s: %s", filename, strerror(errno));
@@ -106,13 +106,10 @@ size_t terminal_display_picture(const cJSON *current)
                         printf("\n");
                         return 1;
                     }
-                }
-                fflush(stderr);
-                curl_easy_cleanup(weather_icon_image);
-                fclose(fp);
-            } else {
-                fprintf(stderr, "WEATHER_ICONS_ARRAY_ITEM. %s", strerror(errno));
-                printf("\n");
+                    fflush(stderr);
+                    curl_easy_cleanup(weather_icon_image);
+                    fclose(fp);
+                } 
             }
         }
 
