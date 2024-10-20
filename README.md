@@ -12,36 +12,35 @@ My second attempt for a final project was remaking spaceinvaders with c and rayl
 Finally I had the idea for this weather_cli, it seemed hard enough but definitly possible to do in time.
 
 ## 🔗 Dependencies
-##### Curl
+#### Curl
 You need [curl](https://curl.se) you can either [download](https://curl.se/download.html) it from the official website, or the build system ([meson](https://mesonbuild.com/index.html)) will download it for you since libcurl has a [meson wrapDB package](https://mesonbuild.com/Wrapdb-projects.html).
 
-##### Meson build system
+#### Meson build system
 For meson you **need python**. You can find installation methods for meson [here](https://mesonbuild.com/Getting-meson.html).
 You also **need [ninja](https://ninja-build.org/)**.
 
-##### Terminal image viewer
+#### Terminal image viewer
 The weather_cli uses [timg](https://github.com/hzeller/timg/) to display the images on the terminal. Meson will check if timg is installed, if not it will not setup the builddir.
 
-##### cJSON
+#### cJSON
 The [cJSON](https://github.com/DaveGamble/cJSON?tab=MIT-1-ov-file#readme) library is shipped within the project source code.
 
 > [!NOTE]
 > THERE IS NO MAC SUPPORT CURRENTLY I DONT THINK THIS WORKS FOR MAC RIGHT NOW.
-##### MacOs
+#### MacOs
 ```zsh
 brew install pkg-config
 brew install ninja
 brew install meson
 brew install timg
 ```
-
-##### Arch Linux
+#### Arch Linux
 ```bash
 pacman -S pkgconf ninja meson
 yay -S timg
 ```
 
-##### Weatherstack API Key
+#### Weatherstack API Key
 
 Last but not least you need your Weatherstack API key, which you can get with a Weatherstack account.
 You can sign up here: https://weatherstack.com/signup/free
