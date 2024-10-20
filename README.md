@@ -110,7 +110,7 @@ Linux tux 6.11.3-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
 <!---->
 <!-- If you want to read more about meson install you can read here [here](https://mesonbuild.com/Installing.html). -->
 <!---->
-##  Using the weather cli
+###  Using the weather cli
 
 After building the program, you can just execute ./weather_cli
 with no options to get a usage screen. That looks something like this.
@@ -166,7 +166,7 @@ The Object in this case "location", is a json object
 Which we look for in the json file if we find it, we then look for the "name", 
 if this is a string, and the valuestring is not NULL we display it on the terminal.
 
-## Converting characters
+### Converting characters
 
 I am German, and in the German language there are so called "[umlaute](https://en.wikipedia.org/wiki/Umlaut_%28linguistics%29)" these are letters with the small dots over them ö ä ü. Some city names most notably München have these. I had to discover that the weatherstack API does not support these umlaute.
 So I thought about how I can detect them and convert them to oe ae ue, which means the same but is a format that the weatherstack api can read and process.
@@ -179,7 +179,7 @@ Märkisch Buchholz -> Maerkisch Buchholz
 
 This is the [UTF8-Character chart](https://www.utf8-zeichentabelle.de/unicode-utf8-table.pl?start=128&utf8=0x)
 
-## Getting and downloading the weather picture  <!-- (terminal_display_picture.c) -->
+### Getting and downloading the weather picture  <!-- (terminal_display_picture.c) -->
 
 The API provides a direct link to a png, that we download with curl. I implemented a system that checks if the png already exists,
 if it does the program displays the picture that is already on your machine, this is possible because the pictures get the same names every time. 
@@ -188,14 +188,14 @@ the last /. This then gives us /filename.png,
 we then delete the / and there we have the filename. The [file_exists()](https://github.com/Landixbtw/weather_cli/blob/main/src/terminal_display_picture.c#L241)
 function checks if the file exists, if not then the download part is triggered.
 
-## Displaying the picture on the command line
+### Displaying the picture on the command line
 
 Displaying the image on the command line is as easy as checking if the user has one of the
 "supported" terminal image viewers installed on their system and executing a command.
 With ```popen()``` we can pipe the output directly onto the terminal.
 
 
-## Determining the terminal emulator protocol <!-- (terminal_support.c) -->
+.## Determining the terminal emulator protocol <!-- (terminal_support.c) -->
 Different terminal emulators, use different protocols, for example:
 - xterm
 - xterm-256color
