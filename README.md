@@ -176,7 +176,7 @@ München -> Muenchen
 Köln -> Koeln
 Märkrisch Buchholz -> Maerkrisch Buchholz
 
-This is the UTF-Character chart --> https://www.utf8-zeichentabelle.de/unicode-utf8-table.pl?start=128&utf8=0x
+This is the [UTF8-Character chart](https://www.utf8-zeichentabelle.de/unicode-utf8-table.pl?start=128&utf8=0x)
 
 ## Getting and downloading the weather picture  <!-- (terminal_display_picture.c) -->
 
