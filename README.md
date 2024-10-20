@@ -1,37 +1,33 @@
 
 # <center> 🌥️Weather cli </center>
-https://cs50.harvard.edu/x/2024/project/  
-/*  
-*   Video Demo: yt url
-*   3min video maybe pp / and live demo
-<!-- *   Description of the project -->
-<!-- *   Talk about all the files, and what they, do  -->
-*   Did I debate certain design choices, why did I make them
-*/  
+<!-- https://cs50.harvard.edu/x/2024/project/ --> 
 
-This command line tool is actually my third attempt at a final project for cs50x 2024. My first attempt was trying to create a small operating system called [BridgeOS](https://github.com/Landixbtw/BridgeOS), but it got clear quite fast
-that this was way out of scope for me. Altough this is not my final project, I will probably pick this up again when I know c better. Between working this low level and
-implementing my own libc this would have been too hard, and taken too much time. My second attempt for a final project was remaking spaceinvaders with c and raylib.
-But there where I had some big issues and I could not get around them, even after weeks of trying. Finally I had the idea for this weather_cli, it seemed hard enough but definitly
-possible to do in time.
+Video Demo of the project: 
+
+My final project is a command-line interface tool that allows the user to display the current weather conditions, and other information about a given city. The "weather_cli" send 
+a API and parses this, to then display the output. This command line tool is actually my third attempt at a final project for cs50x 2024. My first attempt was trying to create a 
+small operating system called [BridgeOS](https://github.com/Landixbtw/BridgeOS), but it got clear quite fast that this was way out of scope for me. Altough this is not my final 
+project, I will probably pick this up again when I know c better. Between working this low level and implementing my own libc this would have been too hard, and taken too much time. 
+My second attempt for a final project was remaking spaceinvaders with c and raylib. But there where I had some big issues and I could not get around them, even after weeks of trying. 
+Finally I had the idea for this weather_cli, it seemed hard enough but definitly possible to do in time.
 
 ## 🔗 Dependencies
-### Curl
+##### Curl
 You need [curl](https://curl.se) you can either [download](https://curl.se/download.html) it from the official website, or the build system ([meson](https://mesonbuild.com/index.html)) will download it for you since libcurl has a [meson wrapDB package](https://mesonbuild.com/Wrapdb-projects.html).
 
-### Meson build system
+##### Meson build system
 For meson you **need python**. You can find installation methods for meson [here](https://mesonbuild.com/Getting-meson.html).
 You also **need [ninja](https://ninja-build.org/)**.
 
-### Terminal image viewer
+##### Terminal image viewer
 The weather_cli uses [timg](https://github.com/hzeller/timg/) to display the images on the terminal. Meson will check if timg is installed, if not it will not setup the builddir.
 
-### cJSON
+##### cJSON
 The [cJSON](https://github.com/DaveGamble/cJSON?tab=MIT-1-ov-file#readme) library is shipped within the project source code.
 
 > [!NOTE]
 > THERE IS NO MAC SUPPORT CURRENTLY I DONT THINK THIS WORKS FOR MAC RIGHT NOW.
-### MacOs
+##### MacOs
 ```zsh
 brew install pkg-config
 brew install ninja
@@ -39,15 +35,13 @@ brew install meson
 brew install timg
 ```
 
-### Arch Linux
+##### Arch Linux
 ```bash
-pacman -S pkgconf
-pacman -S ninja
-pacman -S meson
+pacman -S pkgconf ninja meson
 yay -S timg
 ```
 
-### Weatherstack API Key
+##### Weatherstack API Key
 
 Last but not least you need your Weatherstack API key, which you can get with a Weatherstack account.
 You can sign up here: https://weatherstack.com/signup/free
@@ -69,8 +63,8 @@ Altough the error message might say different, use the format that is here CORRE
 
 ## 🚀 Getting Started
 ###  Building the binary
-As long as you have followed all the steps above.
-Building should be as easy as.
+As long as you have followed all the steps above.  
+**For Linux** systems building should be as easy as.
 ```bash
 meson setup builddir
 
@@ -85,34 +79,36 @@ Linux tux 6.10.10-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
 Linux tux 6.11.3-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
 ```
 
-## Installing the cli
-> [!IMPORTANT]
-> I DO NOT RECOMMEND IT. AND I WILL NOT HELP TROUBLESHOOT.
+**For MacOS** you might have to add a sudo before the compile command.
 
-If you still choose to install, I will not be able help you troubleshoot.  
-I _might_ work on getting this ready, but no promises made.  
-You can uncomment the following line in the ```meson.build``` file.
-
-```build
-executable(
-  meson.project_name(),
-  ['src/main.c', 'src/terminal_support.c', 'src/cJSON.c', 'src/image_to_ascii.c', 'src/terminal_display_picture.c'],
-  dependencies: [curL_deps],
-  include_directories: inc_dir,
-  link_with: lib,
-  build_by_default: true,
- --> install: true <--
- --> install_dir: 'your/destination/path' <--
-)
-```
-```bash
-meson install
-```
-
-This will install the cli to the default path. You can also set a custom path.
-
-If you want to read more about meson install you can read here [here](https://mesonbuild.com/Installing.html).
-
+<!-- ### Installing the cli -->
+<!-- > [!IMPORTANT] -->
+<!-- > I DO NOT RECOMMEND IT. AND I WILL NOT HELP TROUBLESHOOT. -->
+<!---->
+<!-- If you still choose to install, I will not be able help you troubleshoot.   -->
+<!-- I _might_ work on getting this ready, but no promises made.   -->
+<!-- You can uncomment the following line in the ```meson.build``` file. -->
+<!---->
+<!-- ```build -->
+<!-- executable( -->
+<!--   meson.project_name(), -->
+<!--   ['src/main.c', 'src/terminal_support.c', 'src/cJSON.c', 'src/image_to_ascii.c', 'src/terminal_display_picture.c'], -->
+<!--   dependencies: [curL_deps], -->
+<!--   include_directories: inc_dir, -->
+<!--   link_with: lib, -->
+<!--   build_by_default: true, -->
+<!--  -> install: true <- -->
+<!--  -> install_dir: 'your/destination/path' <- -->
+<!-- ) -->
+<!-- ``` -->
+<!-- ```bash -->
+<!-- meson install -->
+<!-- ``` -->
+<!---->
+<!-- This will install the cli to the default path. You can also set a custom path. -->
+<!---->
+<!-- If you want to read more about meson install you can read here [here](https://mesonbuild.com/Installing.html). -->
+<!---->
 ##  Using the weather cli
 
 After building the programm, you can just execute ./weather_cli
@@ -132,19 +128,13 @@ New+York or new+york.
 ```
 
 > [!Important]
-> On MacOS you might need to execute both commands with sudo.
-> Also when running the binary
+> On MacOS you might need to execute both commands with sudo.  
 > sudo ./weather_cli Berlin.
-> It might not let you compile, and when running without sudo the .json
-> and .png files might not be created.
-
+> If you run the commands without sudo the .json and .png files might not be created.
 
 ## How it works
 
-- Files in the project what do they do
-
----------
-The ```src/main.c``` file handles, taking the user input, building the url with the build_url() function, with the city, and API key. It also handles the "umlaute" if the city name 
+The ```src/main.c``` file handles, taking the user input, building the url with the [build_url()](https://github.com/Landixbtw/weather_cli/blob/main/src/main.c) function, with the city, and API key. It also handles the "umlaute" if the city name 
 has them (For example München -> Muenchen). The weatherstack cannot handle the umlaute so this is necesarry.
 It takes the json data it gets to from the api and writes it into a json file so that it can be read and displayed to the console with the help of [cJSON](https://github.com/DaveGamble/cJSON). 
 It does all the parsing and checking of the json data.
@@ -172,26 +162,30 @@ The Object in this case "location", is a json object
 "location":{"name":"New York","country":"United States of America","region":"New York","lat":"40.714","lon":"-74.006","timezone_id":"America\/New_York","localtime":"2024-10-19 18:51","localtime_epoch":1729363860,"utc_offset":"-4.0"}
 ```
 
-Which we look for in the json file, if we find it, we then look for the "name", 
+Which we look for in the json file if we find it, we then look for the "name", 
 if this is a string, and the valuestring is not NULL we display it on the terminal.
-This is basically how all of it works.
 
 ## Converting characters
 
 I am German, and in the german language there are so called "[umlaute](https://en.wikipedia.org/wiki/Umlaut_%28linguistics%29)" these are letters with the small dots over them ö ä ü. Some city names most notably München have these. I had to discover that the weatherstack API does not support these umlaute.
 So I thought about how I can detect them and convert them to oe ae ue, which means the same but is a format that the weatherstack api can read and process.
-So München becomes Muenchen. I tried over days, with many different approaches, but could not figure out. You can still find my inital
-attempts on trying to convert the characters, at the bottom of the ```main.c``` file. Eventually I caved and asked [claude.ai](https://www.claude.ai/new).
 
-!!! MORE DETAIL ON HOW THIS WORKS
+The [transliterate_umlaut]() function just checks for the first four bytes which are always the same, in this case "0xC3", if they match the next four are checked. 
+they are then replaced with ae for ä ue for ü and oe for ö.
+München -> Muenchen
+Köln -> Koeln
+Märkrisch Buchholz -> Maerkrisch Buchholz
 
-## Getting and downloading the weather picture (terminal_display_picture.c)
+This is the UTF-Character chart --> https://www.utf8-zeichentabelle.de/unicode-utf8-table.pl?start=128&utf8=0x
 
-The API this is all built on is the [weatherstack API](https://www.weatherstack.com).
-It provides us with all the information needed, and even provides a link to a picture.
-The picture that is being displayed / downloaded, is dependant on the weather of the
-city we are trying to look up. The picture is then being downloaded with curl.
+## Getting and downloading the weather picture  <!-- (terminal_display_picture.c) -->
 
+The API provides a direct link to a png, that we download with curl. I implemented a system that checks if the png already exists,
+if it does the programm displays the picture that is already on your machine, this is possible because the pictures get the same names everytime. 
+With the [get_filename()](https://github.com/Landixbtw/weather_cli/blob/main/src/terminal_display_picture.c#L241) function we take the url to the picture and deleting everything before 
+the last /. This then gives us /filename.png, 
+we then delete the / and there we have the filename. The [file_exists()](https://github.com/Landixbtw/weather_cli/blob/main/src/terminal_display_picture.c#L241)
+function checks if the file exists, if not then the download part is triggered.
 
 ## Displaying the picture on the command line
 
@@ -200,27 +194,40 @@ Displaying the image on the command line is as easy as checking if the user has 
 With ```popen()``` we can pipe the output directly onto the terminal.
 
 
-## Determining the terminal emulator protocol (terminal_support.c)
+## Determining the terminal emulator protocol <!-- (terminal_support.c) -->
 Different terminal emulators, use different protocols, for example:
-
 - xterm
 - xterm-256color
 - xterm-kitty
 - iTerm.app
-- mlterm
+- mlterm  
 
 Some are able to display pictures, and some are not, so in the ```terminal_support.c``` file,
 we are checking which protocol your terminal emulator is using.
 This way we can display different things depending on the outcome, on some terminals you will see a small picture with what the weather currently looks like.
-And for some you will just get a small text telling you that your terminal emulator cannot display pictures, or you may get ascii art.
-If you want a terminal that can display pictures, you should choose one with the following protocols: xterm-256color, xterm-kitty or iTerm.app.
-Some would be:
+And for some you will just get a small text telling you that your terminal emulator cannot display pictures, <del>or you may get ascii art</del>.
+If you want a terminal that can display pictures, you should choose one with the following protocols:   
+xterm-256color, xterm-kitty or iTerm.app.
+Two terminals with such a protocol would be:
 - [wezterm](https://wezfurlong.org/wezterm/index.html)
 - [kitty](https://sw.kovidgoyal.net/kitty/)
+- [iterm2](https://iterm2.com/downloads.html)
+  
+If you want to know more about this topic there is a post on [unix.stackexchange](https://unix.stackexchange.com/questions/5800/what-protocol-standard-is-used-by-terminals) about 
+the topic.
+### 🖌️ Design Choices
+
+The only design choice I really had was, were to put the image, if displayed. It used to be at the right, next to the text. But there was no good way of determining the string 
+length, of the output and still displaying the picture where I wanted it, since the text that was too long was in the bottom third of the picture and I could not get the string 
+length and make the adjustement to the image placement. It does look good at the top, but the problem is that it takes forever to load / download. I might get some multithreading 
+going and drawing the picture piece by piece. 
 
 
-TODO:
-- Go more into detail with term emulator protocol ?
-- Make more code comments ?
-- https://stackoverflow.com/questions/5134891/how-do-i-use-valgrind-to-find-memory-leaks
-- If not weatherstack api key file detected, ask user for api key, and make file echo the key, into the file
+<!-- TODO:
+    - Make more code comments ?
+    - https://stackoverflow.com/questions/5134891/how-do-i-use-valgrind-to-find-memory-leaks
+    - If not weatherstack api key file detected, ask user for api key, and make file echo the key, into the file
+--> 
+
+## 📃 License
+This project uses the MIT-License it can be found in the LICENSE file

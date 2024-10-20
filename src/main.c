@@ -482,8 +482,10 @@ char *transliterate_umlaut(const char* input) {
     size_t j = 0;
 
     for (size_t i = 0; i < len; ) {
+        /* This checks if the 0xC3 is present, since these are the first four bytes of UTF-8 umlaute*/
         if ((unsigned char)input[i] == 0xC3) {
             switch ((unsigned char)input[i + 1]) {
+                /* If the bytes, after 0xC3 are not the following it defaults to copying them */
                 case 0xA4: // ä
                 case 0x84: // Ä
                     output[j++] = 'a';
@@ -505,6 +507,7 @@ char *transliterate_umlaut(const char* input) {
             }
             i += 2;
         } else {
+            /* If the character is not an umlaut it gets directly copied to the output*/
             output[j++] = input[i++];
         }
     }
