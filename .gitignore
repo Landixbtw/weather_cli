@@ -5,4 +5,4 @@ builddir/
 build/
 readme.txt
 author_info.c
-skript.md
+*.pdf
