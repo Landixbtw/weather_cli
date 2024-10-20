@@ -1,5 +1,10 @@
 
-# <center> 🌥️Weather cli </center>
+<h1>
+    <p align="center">
+        🌥️Weather cli 
+    </p>
+</h1>
+<!-- # <center> 🌥️Weather cli </center> -->
 <!-- https://cs50.harvard.edu/x/2024/project/ --> 
 
 Video Demo of the project: 
@@ -133,7 +138,7 @@ New+York or new+york.
 > sudo ./weather_cli Berlin.
 > If you run the commands without sudo the .json and .png files might not be created.
 
-## How it works
+## ⚙️ How it works
 
 The ```src/main.c``` file handles, taking the user input, building the url with the [build_url()](https://github.com/Landixbtw/weather_cli/blob/main/src/main.c) function, with the city, and API key. It also handles the "umlaute" if the city name 
 has them (For example München -> Muenchen). The weatherstack cannot handle the umlaute so this is necessary.
