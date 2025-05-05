@@ -57,7 +57,7 @@ file in `src/resources` (if the folder does not exist, create it) and paste your
 Also use the correct format. ↓
 
 > [!NOTE]
-> CORRECT FORMAT: YOUR_ACCESS_KEY
+> CORRECT FORMAT: YOUR_ACCESS_KEY  
 > WRONG FORMAT: access_key=YOUR_ACCESS_KEY
 
 ```bash
