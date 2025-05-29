@@ -189,7 +189,7 @@ Displaying the image on the command line is as easy as checking if the user has 
 With ```popen()``` we can pipe the output directly onto the terminal.
 
 
-.## Determining the terminal emulator protocol <!-- (terminal_support.c) -->
+## Determining the terminal emulator protocol <!-- (terminal_support.c) -->
 Different terminal emulators, use different protocols, for example:
 - xterm
 - xterm-256color
