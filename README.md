@@ -225,4 +225,4 @@ going and drawing the picture piece by piece.
 --> 
 
 ## 📃 License
-This project uses the MIT-License it can be found in the [LICENSE](LICENSE.md) file
+This project uses the MIT-License it can be found in the [LICENSE](LICENSE) file
