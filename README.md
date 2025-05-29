@@ -4,18 +4,9 @@
         🌥️Weather cli 
     </p>
 </h1>
-<!-- https://cs50.harvard.edu/x/2024/project/ --> 
 
-Video Demo of the project: https://youtu.be/FPyX3rfdXyc
-
-My final project is a command-line interface tool that allows the user to display the current weather conditions, and other information about a given city. The "weather_cli" sends
-an API request and parses the content that is returned, to then display the output. This command line tool is actually my third attempt at a final project for cs50x 2024. 
-
-My first attempt was trying to create a 
-small operating system called [BridgeOS](https://github.com/Landixbtw/BridgeOS), but it got clear quite fast that this was way out of scope for me. Although this is not my final 
-project, I will probably pick this up again when I know c better. Between working this low level and implementing my own libc this would have been too hard, and taken too much time. 
-My second attempt for a final project was remaking spaceinvaders with c and raylib. But there were some big issues and I could not get around them, even after weeks of trying. 
-Finally I had the idea for this weather_cli, it seemed hard enough but definitely possible to do in time.
+"weather_cli" is a command-line interface tool that allows the user to display the current weather conditions, and other information about a given city. The "weather_cli" sends
+an API request and parses the content that is returned, to then display the output. 
 
 ## 🔗 Dependencies
 #### Curl
